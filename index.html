@@ -3,543 +3,386 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Портфолио видеомонтажера | Матвей Споршев</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Матвей Споршев — Видеомонтажер</title>
   <style>
-    * {
-      box-sizing: border-box;
+    body {
+      font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
+      background: #008080;
+      color: #000000;
       margin: 0;
+      padding: 0;
+      font-size: 12px;
+    }
+
+    .window {
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      box-shadow: 1px 1px 0 #000000, inset 1px 1px 0 #dfdfdf;
+      margin: 20px auto;
+      max-width: 900px;
+      padding: 3px;
+    }
+
+    .title-bar {
+      background: #000080;
+      color: #ffffff;
+      padding: 5px 8px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #000;
+    }
+
+    .title-bar-buttons span {
+      background: #c0c0c0;
+      border-top: 1px solid #ffffff;
+      border-left: 1px solid #ffffff;
+      border-right: 1px solid #000000;
+      border-bottom: 1px solid #000000;
+      padding: 0px 3px;
+      margin-left: 2px;
+      font-family: "Marlett", "Webdings";
+      font-size: 10px;
+      cursor: default;
+    }
+
+    header, section, footer {
       padding: 0;
     }
 
-    :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --dark-bg: #0f172a;
-      --dark-nav: #1e293b;
-      --text-light: #f1f5f9;
-      --text-dark: #0f172a;
-      --text-body: #334155;
-      --bg-light: #f1f5f9;
-      --bg-content: #fff;
-      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-      --transition: all 0.3s ease;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #e2e8f0;
-      background-image: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
-      color: var(--text-dark);
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Header Styles */
-    header {
-      background: linear-gradient(120deg, #0f2b68 0%, #1e3a8a 50%, #1e40af 100%);
-      color: #fff;
-      text-align: center;
-      padding: 100px 20px 80px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTIwIDQwQzMxLjA0NTcgNDAgNDAgMzEuMDQ1NyA0MCAyMEM0MCA4Ljk1NDMgMzEuMDQ1NyAwIDIwIDBDOC45NTQzIDAgMCA4Ljk1NDMgMCAyMEMwIDMxLjA0NTcgOC45NTQzIDQwIDIwIDQwWiIvPjwvZz48L3N2Zz4=');
-      opacity: 0.07;
-    }
-
-    .header-content {
-      position: relative;
-      z-index: 2;
-      max-width: 800px;
-      margin: 0 auto;
+    header .window-content, section .window-content {
+      padding: 15px;
+      background: #ffffff;
+      border: 1px solid #808080;
+      margin: 2px;
     }
 
     header h1 {
-      margin: 0;
-      font-size: 3.5em;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      font-size: 24px;
+      margin-bottom: 5px;
+      text-align: center;
     }
 
     header p {
-      font-size: 1.4em;
-      margin-top: 12px;
-      opacity: 0.95;
-      font-weight: 500;
+      font-size: 14px;
+      color: #333;
+      text-align: center;
     }
 
-    /* Navigation Styles */
     nav {
-      background-color: var(--dark-nav);
-      padding: 18px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: var(--transition);
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 40px;
+      background: #c0c0c0;
+      padding: 8px 0;
+      text-align: center;
+      border-top: 1px solid #ffffff;
+      border-bottom: 1px solid #808080;
+      margin: 2px;
     }
 
     nav a {
-      color: var(--text-light);
+      margin: 0 8px;
+      color: #000;
       text-decoration: none;
-      font-size: 1.1em;
-      font-weight: 500;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-top: 1px solid #ffffff;
+      border-left: 1px solid #ffffff;
+      border-right: 1px solid #000000;
+      border-bottom: 1px solid #000000;
+      background: #c0c0c0;
+      box-shadow: 1px 1px 0 #000000;
+    }
+
+    nav a:active {
+      border-top: 1px solid #000000;
+      border-left: 1px solid #000000;
+      border-right: 1px solid #ffffff;
+      border-bottom: 1px solid #ffffff;
+      box-shadow: none;
       position: relative;
-      padding: 5px 0;
-      transition: var(--transition);
-    }
-
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background-color: var(--primary-color);
-      transition: var(--transition);
-    }
-
-    nav a:hover {
-      color: #fff;
-    }
-
-    nav a:hover::after {
-      width: 100%;
-    }
-
-    /* Section Styles */
-    section {
-      padding: 80px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
-      margin-top: 40px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-      backdrop-filter: blur(10px);
+      top: 1px;
+      left: 1px;
     }
 
     h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
       text-align: center;
-      font-size: 2.4em;
-      font-weight: 600;
-      margin-bottom: 40px;
-      color: var(--text-dark);
-      position: relative;
-      padding-bottom: 15px;
+      border-bottom: 1px dashed #808080;
+      padding-bottom: 5px;
     }
 
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 3px;
-      background: var(--primary-color);
-      border-radius: 3px;
+    .about-content, .contact {
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
     }
 
-    /* Portfolio Styles */
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
-      margin-top: 40px;
+    .portfolio-grid, .ai-video-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
     }
 
     .portfolio-item {
-      background-color: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-      transition: var(--transition);
-    }
-
-    .showreel-wrapper {
-      grid-column: 1 / -1;
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-      box-shadow: var(--card-shadow);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
-    }
-
-    .portfolio-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    .showreel-wrapper:hover {
-      transform: translateY(-5px);
-    }
-
-    .portfolio-item iframe {
-      width: 100%;
-      height: 250px;
-      border: none;
-      display: block;
-      background-color: #000;
-    }
-
-    .showreel-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .video-container {
-      position: relative;
-      overflow: hidden;
-      background-color: #000;
-    }
-
-    /* AI Video Section */
-    .ai-video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
+      width: calc(50% - 10px);
+      max-width: 500px; /* Увеличено с 400px */
+      border: 1px solid #808080;
+      padding: 5px;
+      background: #e0e0e0;
     }
 
     .ai-video-item {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-  background-color: #000;
-  position: relative;
-  transition: var(--transition);
-}
-
-.ai-video-item video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* или cover — если хочешь заполнение с обрезкой */
-  display: block;
-}
-
-    .ai-video-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      width: calc(50% - 10px);
+      max-width: 400px; /* Без изменений */
+      border: 1px solid #808080;
+      padding: 5px;
+      background: #e0e0e0;
     }
 
-    .ai-video-item img {
+    #showreel-container {
+      padding: 1px;
+      width: 95%; /* Увеличено с 90% */
+      max-width: 800px; /* Увеличено с 600px */
+      margin: 0 auto 20px auto;
+    }
+
+    iframe {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: 300px; /* Добавлена фиксированная высота */
+      border: 1px inset #808080;
       display: block;
-      transition: var(--transition);
+    }
+
+    video {
+      width: 100%;
+      height: auto; /* Без изменений для ИИ-видео */
+      border: 1px inset #808080;
+      display: block;
     }
 
     .video-description {
-      background-color: #fff;
-      padding: 15px;
+      font-size: 11px;
       text-align: center;
+      margin-top: 5px;
+      color: #333;
     }
 
-    .video-description p {
-      font-weight: 500;
-      color: var(--text-body);
-      margin: 0;
-    }
-
-    /* About Section */
-    .about-content {
-      max-width: 800px;
-      margin: 0 auto;
-      font-size: 1.1em;
-      color: var(--text-body);
-      text-align: center;
-      line-height: 1.8;
-    }
-
-    /* Contact Section */
-    .contact {
-      text-align: center;
-      font-size: 1.1em;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
-    }
-
-    .contact p {
-      margin: 15px 0;
-      color: var(--text-body);
-    }
-
-    .contact a {
-      color: var(--primary-color);
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .contact a:hover {
-      color: var(--primary-hover);
+    .social-link, .contact a {
+      color: #0000FF;
+      text-decoration: underline;
+      font-size: 13px;
     }
 
     .social-link {
       display: inline-block;
-      padding: 12px 24px;
-      background-color: var(--primary-color);
-      color: #fff;
-      border-radius: 8px;
+      margin-top: 15px;
+      padding: 5px 10px;
+      border-top: 1px solid #ffffff;
+      border-left: 1px solid #ffffff;
+      border-right: 1px solid #000000;
+      border-bottom: 1px solid #000000;
+      background: #c0c0c0;
+      box-shadow: 1px 1px 0 #000000;
       text-decoration: none;
-      margin-top: 20px;
-      font-weight: 500;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-      transition: var(--transition);
+      color: #000;
     }
 
-    .social-link:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    .social-link:active {
+      border-top: 1px solid #000000;
+      border-left: 1px solid #000000;
+      border-right: 1px solid #ffffff;
+      border-bottom: 1px solid #ffffff;
+      box-shadow: none;
+      position: relative;
+      top: 1px;
+      left: 1px;
     }
 
-    /* Footer Styles */
-    footer {
-      background-color: var(--dark-bg);
-      color: var(--text-light);
+
+
+    footer .window-content {
+      font-size: 11px;
       text-align: center;
-      padding: 30px 20px;
-      font-size: 0.95em;
-      margin-top: 40px;
+      padding: 10px;
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    section {
-      animation: fadeIn 0.8s ease-out forwards;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
+      body {
+        padding: 5px;
+      }
+      .window {
+        margin: 10px 5px;
+      }
       header h1 {
-        font-size: 2.8em;
+        font-size: 20px;
       }
-
-      header p {
-        font-size: 1.2em;
-      }
-
-      .nav-container {
-        gap: 20px;
-      }
-
       nav a {
-        font-size: 1em;
+        display: block;
+        margin: 5px auto;
+        width: 80%;
       }
-
-      section {
-        padding: 60px 15px;
+      .portfolio-item, .ai-video-item {
+        width: 100%;
+        max-width: 100%; /* Увеличено для портфолио */
       }
-
+      #showreel-container {
+        width: 95% !important;
+        max-width: 100% !important; /* Увеличено */
+      }
+      iframe {
+        height: 200px; /* Меньшая высота для мобильных */
+      }
       h2 {
-        font-size: 2em;
-      }
-
-      .portfolio-grid,
-      .ai-video-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      }
-    }
-
-    @media (max-width: 480px) {
-      header {
-        padding: 70px 15px 60px;
-      }
-      
-      header h1 {
-        font-size: 2.2em;
-      }
-
-      header p {
-        font-size: 1.1em;
-      }
-
-      .nav-container {
-        gap: 15px;
-      }
-
-      nav a {
-        font-size: 0.9em;
-      }
-
-      h2 {
-        font-size: 1.8em;
-      }
-
-      .portfolio-grid,
-      .ai-video-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .contact {
-        padding: 30px 20px;
+        word-wrap: break-word;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-content">
-      <h1>Матвей Споршев</h1>
-      <p>Видеомонтажер | Создание динамичных и запоминающихся видео</p>
+  <div class="window">
+    <div class="title-bar">
+      <span>Матвей Споршев — Видеомонтажер</span>
+      <div class="title-bar-buttons">
+        <span>_</span><span>🗖</span><span>X</span>
+      </div>
     </div>
-  </header>
-
-  <nav>
-    <div class="nav-container">
+    <header>
+      <div class="window-content">
+        <h1>Матвей Споршев</h1>
+        <p>Видеомонтажер | Создание запоминающихся видео</p>
+      </div>
+    </header>
+    <nav>
       <a href="#about">О себе</a>
       <a href="#portfolio">Портфолио</a>
       <a href="#ai-videos">ИИ-видео</a>
       <a href="#contact">Контакты</a>
-    </div>
-  </nav>
-
-  <section id="about">
-    <h2>О себе</h2>
-    <div class="about-content">
-      <p>Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом работы. Специализируюсь на создании видео различных форматов: от коротких рилс и хайлайтс до многочасовых проектов. Делал рекламные ролики, интервью (1 на 1, уличные и т.д.), тизеры, музыкальные клипы и ИИ-видео.</p>
-    </div>
-  </section>
-
-  <section id="portfolio">
-    <h2>Шоурил</h2>
-    <div class="showreel-wrapper">
-      <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
-    <h2 style="padding: 10% 0 0 0;">Примеры работ</h2>
-    <div class="portfolio-grid">
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Свадебный хайлайтс</p>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Телепередача</p>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://www.youtube.com/embed/OagICGBqHAg" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Стрит-интервью на YouTube</p>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Реакт-видео на YouTube</p>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Реклама</p>
-        </div>
-      </div>
-      <div class="portfolio-item">
-        <div class="video-container">
-          <iframe src="https://player.vimeo.com/video/1084567505?h=884f761fe5" allowfullscreen></iframe>
-        </div>
-        <div class="video-description">
-          <p>Сторис/рилс</p>
-        </div>
+    </nav>
+  
+  </div>
+  <div class="window" id="about">
+    <div class="title-bar">
+      <span>Обо мне</span>
+      <div class="title-bar-buttons">
+        <span>_</span><span>🗖</span><span>X</span>
       </div>
     </div>
-  </section>
-
-  <section id="ai-videos">
-    <h2>ИИ-видео</h2>
-    <div class="ai-video-grid">
-        <div class="ai-video-item">
-          <video autoplay muted loop playsinline>
-            <source src="bird.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео.
-          </video>
-        </div>
-        <div class="ai-video-item">
-          <video autoplay muted loop playsinline>
-            <source src="CAKE_AFTER.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео.
-          </video>
-        </div>
-        <div class="ai-video-item">
-          <video autoplay muted loop playsinline>
-            <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео.
-          </video>
+    <section>
+      <div class="window-content">
+        <h2>О себе</h2>
+        <div class="about-content">
+          Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видео и ИИ-роликов.
         </div>
       </div>
-    <div style="text-align: center; margin-top: 40px;">
-      <a href="https://www.instagram.com/synth.pix" class="social-link">Больше примеров на @synth.pix</a>
+    </section>
+  </div>
+  <div class="window" id="portfolio">
+    <div class="title-bar">
+      <span>Портфолио</span>
+      <div class="title-bar-buttons">
+        <span>_</span><span>🗖</span><span>X</span>
+      </div>
     </div>
-  </section>
-
-  <section id="contact">
-    <h2>Контакты</h2>
-    <div class="contact">
-      <p>Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a></p>
-      <p>Телеграм: <a href="https://t.me/maskitkk">@maskitkk</a></p>
+    <section>
+      <div class="window-content">
+        <h2>Шоурил</h2>
+        <div class="portfolio-item" id="showreel-container">
+          <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <h2>Примеры работ</h2>
+        <div class="portfolio-grid">
+          <div class="portfolio-item">
+            <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Свадебный хайлайтс</div>
+          </div>
+          <div class="portfolio-item">
+            <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Телепередача</div>
+          </div>
+          <div class="portfolio-item">
+            <iframe src="https://www.youtube.com/embed/OagICGBqHAg" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Стрит-интервью</div>
+          </div>
+          <div class="portfolio-item">
+            <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Реакт-видео</div>
+          </div>
+          <div class="portfolio-item">
+            <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Реклама</div>
+          </div>
+          <div class="portfolio-item">
+            <iframe src="https://player.vimeo.com/video/1084567505?h=884f761fe5" frameborder="0" allowfullscreen></iframe>
+            <div class="video-description">Сторис/рилс</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="window" id="ai-videos">
+    <div class="title-bar">
+      <span>ИИ-Видео</span>
+      <div class="title-bar-buttons">
+        <span>_</span><span>🗖</span><span>X</span>
+      </div>
     </div>
-  </section>
-
-  <footer>
-    <p>© 2025 Матвей Споршев. Все права защищены.</p>
-  </footer>
+    <section>
+      <div class="window-content">
+        <h2>ИИ-видео</h2>
+        <div class="ai-video-grid">
+          <div class="ai-video-item">
+            <video autoplay muted loop playsinline>
+              <source src="bird.mp4" type="video/mp4">
+              Ваш браузер не поддерживает видео.
+            </video>
+          </div>
+          <div class="ai-video-item">
+            <video autoplay muted loop playsinline>
+              <source src="CAKE_AFTER.mp4" type="video/mp4">
+              Ваш браузер не поддерживает видео.
+            </video>
+          </div>
+          <div class="ai-video-item">
+            <video autoplay muted loop playsinline>
+              <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
+              Ваш браузер не поддерживает видео.
+            </video>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="https://www.instagram.com/synth.pix" class="social-link" target="_blank">@synth.pix</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="window" id="contact">
+    <div class="title-bar">
+      <span>Контакты</span>
+      <div class="title-bar-buttons">
+        <span>_</span><span>🗖</span><span>X</span>
+      </div>
+    </div>
+    <section>
+      <div class="window-content">
+        <h2>Контакты</h2>
+        <div class="contact">
+          Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
+          Телеграм: <a href="https://t.me/maskitkk" target="_blank">@maskitkk</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="window">
+    <footer>
+      <div class="window-content" style="background: #c0c0c0; text-align:center; border-color: #808080;">
+         © 2025 Матвей Споршев.
+      </div>
+    </footer>
+  </div>
 </body>
 </html>
