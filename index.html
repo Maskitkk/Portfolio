@@ -1,385 +1,514 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Матвей Споршев — Видеомонтажер</title>
-  <style>
-    body {
-      font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
-      background: #008080;
-      color: #000000;
-      margin: 0;
-      padding: 0;
-      font-size: 12px;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Матвей Споршев — Видеомонтажер</title>
+<style>
+  /* --- Палитра Windows 95 --- */
+  :root{
+    --desktop-teal: #008080;    /* фон десктопа */
+    --win-bg: #C0C0C0;          /* фон окон */
+    --edge-light: #FFFFFF;      /* светлая грань */
+    --edge-dark: #808080;       /* темная грань */
+    --edge-darker: #000000;     /* тень */
+    --title-blue: #000080;      /* синий заголовок */
+    --title-blue-2:#000055;
+    --text: #000000;
+  }
 
-    .window {
-      background: #c0c0c0;
-      border-top: 2px solid #ffffff;
-      border-left: 2px solid #ffffff;
-      border-right: 2px solid #000000;
-      border-bottom: 2px solid #000000;
-      box-shadow: 1px 1px 0 #000000, inset 1px 1px 0 #dfdfdf;
-      margin: 20px auto;
-      max-width: 900px;
-      padding: 3px;
-    }
+  /* --- Базовые стили --- */
+  html{box-sizing:border-box; -webkit-font-smoothing:antialiased;}
+  *,*::before,*::after{box-sizing:inherit}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:"MS Sans Serif", Tahoma, Arial, sans-serif;
+    background:var(--desktop-teal);
+    color:var(--text);
+    -webkit-text-size-adjust:100%;
+    line-height:1.35;
+    font-size:15px;
+    padding:20px;
+  }
 
-    .title-bar {
-      background: #000080;
-      color: #ffffff;
-      padding: 5px 8px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #000;
-    }
+  /* Центровка контейнера */
+  .container{
+    max-width:980px;
+    margin:0 auto;
+  }
 
-    .title-bar-buttons span {
-      background: #c0c0c0;
-      border-top: 1px solid #ffffff;
-      border-left: 1px solid #ffffff;
-      border-right: 1px solid #000000;
-      border-bottom: 1px solid #000000;
-      padding: 0px 3px;
-      margin-left: 2px;
-      font-family: "Arial", "Webdings";
-      font-size: 10px;
-      cursor: default;
-    }
+  /* --- Общий стиль окна (ретро) --- */
+  .window{
+    background:var(--win-bg);
+    border-top:2px solid var(--edge-light);
+    border-left:2px solid var(--edge-light);
+    border-right:2px solid var(--edge-dark);
+    border-bottom:2px solid var(--edge-dark);
+    box-shadow:4px 4px 0 rgba(0,0,0,0.6);
+    margin:18px 8px;
+    overflow:hidden;
+    transform:translateY(24px);
+    opacity:0;
+    transition:transform .5s ease, opacity .5s ease;
+  }
+  .window.visible{
+    transform:none;
+    opacity:1;
+  }
 
-    header, section, footer {
-      padding: 0;
-    }
+  .title-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:3px 8px;
+    gap:8px;
+    background: linear-gradient(180deg,var(--title-blue),var(--title-blue-2));
+    color:var(--edge-light);
+    font-weight:bold;
+    font-size:15px;
+    height:30px;
+    box-shadow: inset -1px -1px rgba(0,0,0,0.12);
+  }
 
-    header .window-content, section .window-content {
-      padding: 15px;
-      background: #ffffff;
-      border: 1px solid #808080;
-      margin: 2px;
-    }
+  .title{
+    user-select:none;
+  }
 
-    header h1 {
-      font-size: 24px;
-      margin-bottom: 5px;
-      text-align: center;
-    }
+  .title-controls{
+    display:flex;
+    gap:6px;
+    align-items:center;
+  }
 
-    header p {
-      font-size: 14px;
-      color: #333;
-      text-align: center;
-    }
+  /* Кнопки заголовка в стиле Win95 */
+  .win-btn{
+    width:20px;
+    height:18px;
+    border:1px solid var(--edge-dark);
+    background:var(--win-bg);
+    padding:0;
+    margin:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:default;
+    box-shadow: inset -1px -1px var(--edge-light), inset 1px 1px rgba(0,0,0,0.18);
+    font-size:12px;
+    line-height:1;
+    color:var(--text);
+  }
+  .win-btn:active{
+    box-shadow: inset 1px 1px var(--edge-light), inset -1px -1px rgba(0,0,0,0.18);
+    transform:translateY(1px);
+  }
 
-    nav {
-      background: #c0c0c0;
-      padding: 8px 0;
-      text-align: center;
-      border-top: 1px solid #ffffff;
-      border-bottom: 1px solid #808080;
-      margin: 2px;
-    }
+  /* Содержимое окна */
+  .window .window-body{
+    padding:14px;
+    background:#fff;
+    border-top:1px solid var(--edge-dark);
+  }
 
-    nav a {
-      margin: 0 8px;
-      color: #000;
-      text-decoration: none;
-      font-size: 12px;
-      padding: 5px 10px;
-      border-top: 1px solid #ffffff;
-      border-left: 1px solid #ffffff;
-      border-right: 1px solid #000000;
-      border-bottom: 1px solid #000000;
-      background: #c0c0c0;
-      box-shadow: 1px 1px 0 #000000;
-    }
+  header h1{
+    margin:4px 0 2px;
+    font-size:26px;
+    text-align:center;
+  }
+  header p{
+    margin:0 0 8px;
+    text-align:center;
+    color:#222;
+    font-size:15px;
+  }
 
-    nav a:active {
-      border-top: 1px solid #000000;
-      border-left: 1px solid #000000;
-      border-right: 1px solid #ffffff;
-      border-bottom: 1px solid #ffffff;
-      box-shadow: none;
-      position: relative;
-      top: 1px;
-      left: 1px;
-    }
+  /* Навигация */
+  nav{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    padding:8px;
+    background:var(--win-bg);
+    border-top:2px solid var(--edge-light);
+    border-bottom:2px solid var(--edge-dark);
+    margin-top:6px;
+  }
 
-    h2 {
-      font-size: 18px;
-      margin-bottom: 15px;
-      text-align: center;
-      border-bottom: 1px dashed #808080;
-      padding-bottom: 5px;
-    }
+  .nav-link{
+    font-size:14px;
+    text-decoration:none;
+    color:var(--text);
+    padding:6px 10px;
+    display:inline-block;
+    border-top:2px solid var(--edge-light);
+    border-left:2px solid var(--edge-light);
+    border-bottom:2px solid var(--edge-dark);
+    border-right:2px solid var(--edge-dark);
+    background:var(--win-bg);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
+    transition:transform .08s ease, background .12s ease;
+  }
+  .nav-link:active,
+  .nav-link.pressed{
+    transform:translateY(2px);
+    box-shadow:none;
+    border-top:2px solid var(--edge-dark);
+    border-left:2px solid var(--edge-dark);
+    border-bottom:2px solid var(--edge-light);
+    border-right:2px solid var(--edge-light);
+  }
+  .nav-link:focus{outline:2px dotted #333; outline-offset:3px}
 
-    .about-content, .contact {
-      font-size: 13px;
-      line-height: 1.5;
-      text-align: center;
-    }
+  /* Секции */
+  section{margin:0}
+  h2{
+    font-size:18px;
+    margin:6px 0 12px;
+    text-align:center;
+    padding-bottom:8px;
+    border-bottom:1px dashed var(--edge-dark);
+  }
 
-    .portfolio-grid, .ai-video-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-    }
+  .about-content,
+  .contact{text-align:center; font-size:15px; color:#111; padding:6px 12px}
 
-    .portfolio-item {
-      width: calc(50% - 10px);
-      max-width: 500px; /* Увеличено с 400px */
-      border: 1px solid #808080;
-      padding: 5px;
-      background: #e0e0e0;
-    }
+  /* Сетка портфолио */
+  .portfolio-grid,
+  .ai-video-grid{
+    display:grid;
+    gap:12px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    margin:6px 0;
+  }
 
-    .ai-video-item {
-      width: calc(50% - 10px);
-      max-width: 400px; /* Без изменений */
-      border: 1px solid #808080;
-      padding: 5px;
-      background: #e0e0e0;
-    }
+  .media-card{
+    background:#E0E0E0;
+    border-top:2px solid var(--edge-light);
+    border-left:2px solid var(--edge-light);
+    border-right:2px solid var(--edge-dark);
+    border-bottom:2px solid var(--edge-dark);
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    align-items:stretch;
+  }
 
-    #showreel-container {
-      padding: 1px;
-      width: 95%; /* Увеличено с 90% */
-      max-width: 800px; /* Увеличено с 600px */
-      margin: 0 auto 20px auto;
-    }
+  iframe, video{
+    width:100%;
+    height:250px;
+    border:1px inset var(--edge-dark);
+    display:block;
+    background:#000;
+    object-fit:cover;
+  }
+  .video-desc{
+    font-size:13px;
+    text-align:center;
+    color:#111;
+  }
 
-    iframe {
-      width: 100%;
-      height: 300px; /* Добавлена фиксированная высота */
-      border: 1px inset #808080;
-      display: block;
-    }
+  /* Соц. кнопка в ретро стиле */
+  .social-link{
+    display:inline-block;
+    text-decoration:none;
+    padding:6px 12px;
+    margin-top:6px;
+    border-top:2px solid var(--edge-light);
+    border-left:2px solid var(--edge-light);
+    border-right:2px solid var(--edge-dark);
+    border-bottom:2px solid var(--edge-dark);
+    background:var(--win-bg);
+    color:var(--text);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
+  }
+  .social-link:active{transform:translateY(2px); box-shadow:none}
 
-    video {
-      width: 100%;
-      height: auto; /* Без изменений для ИИ-видео */
-      border: 1px inset #808080;
-      display: block;
-    }
+  /* Футер */
+  footer .window-body{
+    text-align:center;
+    font-size:13px;
+    background:var(--win-bg);
+    border-top:1px solid var(--edge-dark);
+  }
 
-    .video-description {
-      font-size: 11px;
-      text-align: center;
-      margin-top: 5px;
-      color: #333;
-    }
+  /* Адаптив */
+  @media (max-width:720px){
+    iframe, video{height:200px}
+    header h1{font-size:22px}
+    body{padding:12px}
+  }
 
-    .social-link, .contact a {
-      color: #0000FF;
-      text-decoration: underline;
-      font-size: 13px;
-    }
+  /* Фокус и доступность */
+  a:focus, button:focus{outline:3px solid rgba(0,0,0,0.15); outline-offset:3px}
 
-    .social-link {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 5px 10px;
-      border-top: 1px solid #ffffff;
-      border-left: 1px solid #ffffff;
-      border-right: 1px solid #000000;
-      border-bottom: 1px solid #000000;
-      background: #c0c0c0;
-      box-shadow: 1px 1px 0 #000000;
-      text-decoration: none;
-      color: #000;
-    }
+  /* --- Доп. мелкие анимации (не мешают ретро) --- */
+  .media-card:hover{transform:translateY(-3px); transition:transform .18s ease}
+  .win-cta{
+    display:inline-block;
+    padding:6px 10px;
+    margin-top:8px;
+    font-weight:bold;
+    background:var(--win-bg);
+    border-top:2px solid var(--edge-light);
+    border-left:2px solid var(--edge-light);
+    border-right:2px solid var(--edge-dark);
+    border-bottom:2px solid var(--edge-dark);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
+    cursor:pointer;
+  }
+  .win-cta:active{transform:translateY(2px); box-shadow:none}
 
-    .social-link:active {
-      border-top: 1px solid #000000;
-      border-left: 1px solid #000000;
-      border-right: 1px solid #ffffff;
-      border-bottom: 1px solid #ffffff;
-      box-shadow: none;
-      position: relative;
-      top: 1px;
-      left: 1px;
-    }
-
-
-
-    footer .window-content {
-      font-size: 11px;
-      text-align: center;
-      padding: 10px;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 5px;
-      }
-      .window {
-        margin: 10px 5px;
-      }
-      header h1 {
-        font-size: 20px;
-      }
-      nav a {
-        display: block;
-        margin: 5px auto;
-        width: 80%;
-      }
-      .portfolio-item, .ai-video-item {
-        width: 100%;
-        max-width: 100%; /* Увеличено для портфолио */
-      }
-      #showreel-container {
-        width: 95% !important;
-        max-width: 100% !important; /* Увеличено */
-      }
-      iframe {
-        height: 200px; /* Меньшая высота для мобильных */
-      }
-      h2 {
-        word-wrap: break-word;
-      }
-    }
-  </style>
+  /* small helper for hidden (visually) text */
+  .sr-only {position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+</style>
 </head>
 <body>
-  <div class="window">
-    <div class="title-bar">
-      <span>Матвей Споршев — Видеомонтажер</span>
-      <div class="title-bar-buttons">
-        <span>_</span><span>🗖</span><span>X</span>
+  <div class="container">
+
+    <!-- Header window -->
+    <div class="window" id="top-window" role="region" aria-label="Главное окно">
+      <div class="title-bar" aria-hidden="true">
+        <div class="title">Матвей Споршев — Видеомонтажер</div>
+        <div class="title-controls" role="toolbar" aria-label="Управление окном">
+          <button class="win-btn" title="Minimize" aria-hidden="true">_</button>
+          <button class="win-btn" title="Maximize" aria-hidden="true">▢</button>
+          <button class="win-btn" title="Close" aria-hidden="true">✕</button>
+        </div>
+      </div>
+
+      <div class="window-body">
+        <header>
+          <h1>Матвей Споршев</h1>
+          <p>Видеомонтажер | Создание запоминающихся видео</p>
+        </header>
+
+        <nav role="navigation" aria-label="Навигация по сайту">
+          <a class="nav-link" href="#about">О себе</a>
+          <a class="nav-link" href="#portfolio">Портфолио</a>
+          <a class="nav-link" href="#ai-videos">ИИ-видео</a>
+          <a class="nav-link" href="#contact">Контакты</a>
+        </nav>
+
       </div>
     </div>
-    <header>
-      <div class="window-content">
-        <h1>Матвей Споршев</h1>
-        <p>Видеомонтажер | Создание запоминающихся видео</p>
+
+    <!-- About -->
+    <div class="window" id="about" role="region" aria-labelledby="about-title">
+      <div class="title-bar">
+        <div class="title" id="about-title">Обо мне</div>
+        <div class="title-controls">
+          <button class="win-btn" aria-hidden="true">_</button>
+          <button class="win-btn" aria-hidden="true">▢</button>
+          <button class="win-btn" aria-hidden="true">✕</button>
+        </div>
       </div>
-    </header>
-    <nav>
-      <a href="#about">О себе</a>
-      <a href="#portfolio">Портфолио</a>
-      <a href="#ai-videos">ИИ-видео</a>
-      <a href="#contact">Контакты</a>
-    </nav>
-  
-  </div>
-  <div class="window" id="about">
-    <div class="title-bar">
-      <span>Обо мне</span>
-      <div class="title-bar-buttons">
-        <span>_</span><span>🗖</span><span>X</span>
+      <div class="window-body">
+        <section>
+          <h2>О себе</h2>
+          <div class="about-content">
+            Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроекты и ИИ-ролики.
+          </div>
+        </section>
       </div>
     </div>
-    <section>
-      <div class="window-content">
-        <h2>О себе</h2>
-        <div class="about-content">
-          Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видео и ИИ-роликов.
+
+    <!-- Portfolio -->
+    <div class="window" id="portfolio" role="region" aria-labelledby="portfolio-title">
+      <div class="title-bar">
+        <div class="title" id="portfolio-title">Портфолио</div>
+        <div class="title-controls">
+          <button class="win-btn" aria-hidden="true">_</button>
+          <button class="win-btn" aria-hidden="true">▢</button>
+          <button class="win-btn" aria-hidden="true">✕</button>
         </div>
       </div>
-    </section>
-  </div>
-  <div class="window" id="portfolio">
-    <div class="title-bar">
-      <span>Портфолио</span>
-      <div class="title-bar-buttons">
-        <span>_</span><span>🗖</span><span>X</span>
+
+      <div class="window-body">
+        <section aria-label="Шоурил">
+          <h2>Шоурил</h2>
+          <div class="media-card" style="padding:6px;">
+            <!-- Showreel -->
+            <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allowfullscreen title="Showreel Матвея"></iframe>
+          </div>
+
+          <h2 style="margin-top:14px">Примеры работ</h2>
+          <div class="portfolio-grid" aria-live="polite">
+            <div class="media-card">
+              <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" frameborder="0" allowfullscreen title="Свадебный хайлайт"></iframe>
+              <div class="video-desc">Свадебный хайлайтс</div>
+            </div>
+            <div class="media-card">
+              <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" frameborder="0" allowfullscreen title="Телепередача"></iframe>
+              <div class="video-desc">Телепередача</div>
+            </div>
+            <div class="media-card">
+              <iframe src="https://www.youtube.com/embed/OagICGBqHAg" frameborder="0" allowfullscreen title="Стрит-интервью"></iframe>
+              <div class="video-desc">Стрит-интервью</div>
+            </div>
+            <div class="media-card">
+              <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" frameborder="0" allowfullscreen title="Реакт-видео"></iframe>
+              <div class="video-desc">Реакт-видео</div>
+            </div>
+            <div class="media-card">
+              <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" frameborder="0" allowfullscreen title="Реклама"></iframe>
+              <div class="video-desc">Реклама</div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
-    <section>
-      <div class="window-content">
-        <h2>Шоурил</h2>
-        <div class="portfolio-item" id="showreel-container">
-          <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <h2>Примеры работ</h2>
-        <div class="portfolio-grid">
-          <div class="portfolio-item">
-            <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" frameborder="0" allowfullscreen></iframe>
-            <div class="video-description">Свадебный хайлайтс</div>
-          </div>
-          <div class="portfolio-item">
-            <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" frameborder="0" allowfullscreen></iframe>
-            <div class="video-description">Телепередача</div>
-          </div>
-          <div class="portfolio-item">
-            <iframe src="https://www.youtube.com/embed/OagICGBqHAg" frameborder="0" allowfullscreen></iframe>
-            <div class="video-description">Стрит-интервью</div>
-          </div>
-          <div class="portfolio-item">
-            <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" frameborder="0" allowfullscreen></iframe>
-            <div class="video-description">Реакт-видео</div>
-          </div>
-          <div class="portfolio-item">
-            <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" frameborder="0" allowfullscreen></iframe>
-            <div class="video-description">Реклама</div>
-          </div>
-        
+
+    <!-- AI Videos -->
+    <div class="window" id="ai-videos" role="region" aria-labelledby="ai-title">
+      <div class="title-bar">
+        <div class="title" id="ai-title">ИИ-Видео</div>
+        <div class="title-controls">
+          <button class="win-btn" aria-hidden="true">_</button>
+          <button class="win-btn" aria-hidden="true">▢</button>
+          <button class="win-btn" aria-hidden="true">✕</button>
         </div>
       </div>
-    </section>
-  </div>
-  <div class="window" id="ai-videos">
-    <div class="title-bar">
-      <span>ИИ-Видео</span>
-      <div class="title-bar-buttons">
-        <span>_</span><span>🗖</span><span>X</span>
+
+      <div class="window-body">
+        <section>
+          <h2>ИИ-видео</h2>
+          <div class="ai-video-grid">
+            <div class="media-card">
+              <video autoplay muted loop playsinline>
+                <source src="bird.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <div class="video-desc">AI: bird.mp4</div>
+            </div>
+            <div class="media-card">
+              <video autoplay muted loop playsinline>
+                <source src="CAKE_AFTER.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <div class="video-desc">AI: CAKE_AFTER.mp4</div>
+            </div>
+            <div class="media-card">
+              <video autoplay muted loop playsinline>
+                <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <div class="video-desc">AI: 9x16 demo</div>
+            </div>
+          </div>
+
+          <div style="text-align:center; margin-top:10px;">
+            <a class="social-link" href="https://www.instagram.com/synth.pix" target="_blank" rel="noopener"> @synth.pix </a>
+          </div>
+        </section>
       </div>
     </div>
-    <section>
-      <div class="window-content">
-        <h2>ИИ-видео</h2>
-        <div class="ai-video-grid">
-          <div class="ai-video-item">
-            <video autoplay muted loop playsinline>
-              <source src="bird.mp4" type="video/mp4">
-              Ваш браузер не поддерживает видео.
-            </video>
-          </div>
-          <div class="ai-video-item">
-            <video autoplay muted loop playsinline>
-              <source src="CAKE_AFTER.mp4" type="video/mp4">
-              Ваш браузер не поддерживает видео.
-            </video>
-          </div>
-          <div class="ai-video-item">
-            <video autoplay muted loop playsinline>
-              <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
-              Ваш браузер не поддерживает видео.
-            </video>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
-          <a href="https://www.instagram.com/synth.pix" class="social-link" target="_blank">@synth.pix</a>
+
+    <!-- Contacts -->
+    <div class="window" id="contact" role="region" aria-labelledby="contact-title">
+      <div class="title-bar">
+        <div class="title" id="contact-title">Контакты</div>
+        <div class="title-controls">
+          <button class="win-btn" aria-hidden="true">_</button>
+          <button class="win-btn" aria-hidden="true">▢</button>
+          <button class="win-btn" aria-hidden="true">✕</button>
         </div>
       </div>
-    </section>
-  </div>
-  <div class="window" id="contact">
-    <div class="title-bar">
-      <span>Контакты</span>
-      <div class="title-bar-buttons">
-        <span>_</span><span>🗖</span><span>X</span>
+
+      <div class="window-body">
+        <section>
+          <h2>Контакты</h2>
+          <div class="contact">
+            Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
+            Телеграм: <a href="https://t.me/maskitkk" target="_blank" rel="noopener">@maskitkk</a>
+          </div>
+
+          <div style="text-align:center; margin-top:10px;">
+            <a class="win-cta" href="mailto:maskitkk@gmail.com">Написать мне</a>
+          </div>
+        </section>
       </div>
     </div>
-    <section>
-      <div class="window-content">
-        <h2>Контакты</h2>
-        <div class="contact">
-          Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
-          Телеграм: <a href="https://t.me/maskitkk" target="_blank">@maskitkk</a>
+
+    <!-- Footer -->
+    <div class="window" aria-hidden="true">
+      <div class="title-bar">
+        <div class="title">Информация</div>
+        <div class="title-controls">
+          <button class="win-btn" aria-hidden="true">_</button>
+          <button class="win-btn" aria-hidden="true">▢</button>
+          <button class="win-btn" aria-hidden="true">✕</button>
         </div>
       </div>
-    </section>
-  </div>
-  <div class="window">
-    <footer>
-      <div class="window-content" style="background: #c0c0c0; text-align:center; border-color: #808080;">
-         © 2025 Матвей Споршев.
+      <div class="window-body">
+        <footer>
+          © 2025 Матвей Споршев.
+        </footer>
       </div>
-    </footer>
+    </div>
+
   </div>
+
+  <!-- Скрипты: анимация появления + nav active -->
+  <script>
+    // IntersectionObserver для появления окон
+    (function(){
+      const opts = {threshold: 0.08};
+      const io = new IntersectionObserver((entries, obs)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        });
+      }, opts);
+
+      document.querySelectorAll('.window').forEach(win => io.observe(win));
+    })();
+
+    // Нажимаемая анимация для nav (вдавливание)
+    document.querySelectorAll('.nav-link').forEach(a=>{
+      a.addEventListener('mousedown', ()=> a.classList.add('pressed'));
+      a.addEventListener('mouseup', ()=> setTimeout(()=>a.classList.remove('pressed'),150));
+      a.addEventListener('mouseleave', ()=> a.classList.remove('pressed'));
+    });
+
+    // Удобная мелочь: при клике на заголовочные кнопки - имитация (не закрывает ничего)
+    document.querySelectorAll('.title-controls .win-btn').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        // краткий эффект нажатия
+        btn.classList.add('pressed');
+        setTimeout(()=> btn.classList.remove('pressed'),180);
+      });
+    });
+
+    // Для лучшей навигации — подсвечиваем пункт меню при прокрутке
+    (function(){
+      const sections = Array.from(document.querySelectorAll('section'));
+      const navLinks = Array.from(document.querySelectorAll('.nav-link'));
+      const secsMap = sections.map(s => ({id:s.parentElement.id || s.parentElement.getAttribute('id'), top:0, el:s}));
+      function sync(){
+        const scroll = window.scrollY + innerHeight/3;
+        let activeId = null;
+        for(const s of secsMap){
+          const rect = s.el.getBoundingClientRect();
+          const pageTop = window.scrollY + rect.top;
+          if(pageTop <= scroll) activeId = s.el.parentElement.id;
+        }
+        navLinks.forEach(n=> n.classList.toggle('active', n.getAttribute('href') === ('#'+activeId)));
+      }
+      window.addEventListener('scroll', throttle(sync,150));
+      window.addEventListener('resize', throttle(sync,250));
+      sync();
+
+      function throttle(fn, wait){
+        let t=0;
+        return function(...a){
+          const now = Date.now();
+          if(now - t > wait){ t=now; fn.apply(this,a); }
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
