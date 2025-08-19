@@ -159,6 +159,41 @@
   }
   .nav-link:focus{outline:2px dotted #333; outline-offset:3px}
 
+  /* Переключатель языка */
+  .lang-switcher{
+    position:absolute;
+    top:10px;
+    right:10px;
+    display:flex;
+    gap:4px;
+    z-index:1000;
+  }
+
+  .lang-btn{
+    padding:4px 8px;
+    font-size:12px;
+    border:1px solid var(--edge-dark);
+    background:var(--win-bg);
+    color:var(--text);
+    cursor:pointer;
+    box-shadow: inset -1px -1px var(--edge-light), inset 1px 1px rgba(0,0,0,0.18);
+    transition:all .1s ease;
+  }
+
+  .lang-btn.active{
+    background:var(--title-blue);
+    color:var(--edge-light);
+    box-shadow: inset 1px 1px rgba(0,0,0,0.3);
+  }
+
+  .lang-btn:hover:not(.active){
+    background:#D0D0D0;
+  }
+
+  .lang-btn:active{
+    transform:translateY(1px);
+  }
+
   /* Секции */
   section{margin:0}
   h2{
@@ -237,6 +272,11 @@
     iframe, video{height:200px}
     header h1{font-size:22px}
     body{padding:12px}
+    .lang-switcher{
+      position:static;
+      justify-content:center;
+      margin-bottom:10px;
+    }
   }
 
   /* Фокус и доступность */
@@ -264,12 +304,18 @@
 </style>
 </head>
 <body>
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn" data-lang="ru">RU</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
+
   <div class="container">
 
     <!-- Header window -->
     <div class="window" id="top-window" role="region" aria-label="Главное окно">
       <div class="title-bar" aria-hidden="true">
-        <div class="title">Матвей Споршев — Видеомонтажер</div>
+        <div class="title" data-translate="page-title">Матвей Споршев — Видеомонтажер</div>
         <div class="title-controls" role="toolbar" aria-label="Управление окном">
           <button class="win-btn" title="Minimize" aria-hidden="true">_</button>
           <button class="win-btn" title="Maximize" aria-hidden="true">▢</button>
@@ -279,15 +325,15 @@
 
       <div class="window-body">
         <header>
-          <h1>Матвей Споршев</h1>
-          <p>Видеомонтажер | Создание запоминающихся видео</p>
+          <h1 data-translate="name">Матвей Споршев</h1>
+          <p data-translate="job-title">Видеомонтажер | Создание запоминающихся видео</p>
         </header>
 
         <nav role="navigation" aria-label="Навигация по сайту">
-          <a class="nav-link" href="#about">О себе</a>
-          <a class="nav-link" href="#portfolio">Портфолио</a>
-          <a class="nav-link" href="#ai-videos">ИИ-видео</a>
-          <a class="nav-link" href="#contact">Контакты</a>
+          <a class="nav-link" href="#about" data-translate="nav-about">О себе</a>
+          <a class="nav-link" href="#portfolio" data-translate="nav-portfolio">Портфолио</a>
+          <a class="nav-link" href="#ai-videos" data-translate="nav-ai">ИИ-видео</a>
+          <a class="nav-link" href="#contact" data-translate="nav-contact">Контакты</a>
         </nav>
 
       </div>
@@ -296,7 +342,7 @@
     <!-- About -->
     <div class="window" id="about" role="region" aria-labelledby="about-title">
       <div class="title-bar">
-        <div class="title" id="about-title">Обо мне</div>
+        <div class="title" id="about-title" data-translate="about-title">Обо мне</div>
         <div class="title-controls">
           <button class="win-btn" aria-hidden="true">_</button>
           <button class="win-btn" aria-hidden="true">▢</button>
@@ -305,9 +351,9 @@
       </div>
       <div class="window-body">
         <section>
-          <h2>О себе</h2>
-          <div class="about-content">
-            Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроекты и ИИ-ролики.
+          <h2 data-translate="about-heading">О себе</h2>
+          <div class="about-content" data-translate="about-text">
+            Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроектов и ИИ-роликов.
           </div>
         </section>
       </div>
@@ -316,7 +362,7 @@
     <!-- Portfolio -->
     <div class="window" id="portfolio" role="region" aria-labelledby="portfolio-title">
       <div class="title-bar">
-        <div class="title" id="portfolio-title">Портфолио</div>
+        <div class="title" id="portfolio-title" data-translate="portfolio-title">Портфолио</div>
         <div class="title-controls">
           <button class="win-btn" aria-hidden="true">_</button>
           <button class="win-btn" aria-hidden="true">▢</button>
@@ -326,33 +372,33 @@
 
       <div class="window-body">
         <section aria-label="Шоурил">
-          <h2>Шоурил</h2>
+          <h2 data-translate="showreel-heading">Шоурил</h2>
           <div class="media-card" style="padding:6px;">
             <!-- Showreel -->
             <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allowfullscreen title="Showreel Матвея"></iframe>
           </div>
 
-          <h2 style="margin-top:14px">Примеры работ</h2>
+          <h2 style="margin-top:14px" data-translate="examples-heading">Примеры работ</h2>
           <div class="portfolio-grid" aria-live="polite">
             <div class="media-card">
               <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" frameborder="0" allowfullscreen title="Свадебный хайлайт"></iframe>
-              <div class="video-desc">Свадебный хайлайтс</div>
+              <div class="video-desc" data-translate="wedding-desc">Свадебный хайлайтс</div>
             </div>
             <div class="media-card">
               <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" frameborder="0" allowfullscreen title="Телепередача"></iframe>
-              <div class="video-desc">Телепередача</div>
+              <div class="video-desc" data-translate="tv-desc">Телепередача</div>
             </div>
             <div class="media-card">
               <iframe src="https://www.youtube.com/embed/OagICGBqHAg" frameborder="0" allowfullscreen title="Стрит-интервью"></iframe>
-              <div class="video-desc">Стрит-интервью</div>
+              <div class="video-desc" data-translate="street-desc">Стрит-интервью</div>
             </div>
             <div class="media-card">
               <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" frameborder="0" allowfullscreen title="Реакт-видео"></iframe>
-              <div class="video-desc">Реакт-видео</div>
+              <div class="video-desc" data-translate="react-desc">Реакт-видео</div>
             </div>
             <div class="media-card">
               <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" frameborder="0" allowfullscreen title="Реклама"></iframe>
-              <div class="video-desc">Реклама</div>
+              <div class="video-desc" data-translate="ad-desc">Реклама</div>
             </div>
           </div>
         </section>
@@ -362,7 +408,7 @@
     <!-- AI Videos -->
     <div class="window" id="ai-videos" role="region" aria-labelledby="ai-title">
       <div class="title-bar">
-        <div class="title" id="ai-title">ИИ-Видео</div>
+        <div class="title" id="ai-title" data-translate="ai-title">ИИ-Видео</div>
         <div class="title-controls">
           <button class="win-btn" aria-hidden="true">_</button>
           <button class="win-btn" aria-hidden="true">▢</button>
@@ -372,26 +418,26 @@
 
       <div class="window-body">
         <section>
-          <h2>ИИ-видео</h2>
+          <h2 data-translate="ai-heading">ИИ-видео</h2>
           <div class="ai-video-grid">
             <div class="media-card">
               <video autoplay muted loop playsinline>
                 <source src="bird.mp4" type="video/mp4">
-                Ваш браузер не поддерживает видео.
+                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
               </video>
               <div class="video-desc">AI: bird.mp4</div>
             </div>
             <div class="media-card">
               <video autoplay muted loop playsinline>
                 <source src="CAKE_AFTER.mp4" type="video/mp4">
-                Ваш браузер не поддерживает видео.
+                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
               </video>
               <div class="video-desc">AI: CAKE_AFTER.mp4</div>
             </div>
             <div class="media-card">
               <video autoplay muted loop playsinline>
                 <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
-                Ваш браузер не поддерживает видео.
+                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
               </video>
               <div class="video-desc">AI: 9x16 demo</div>
             </div>
@@ -407,7 +453,7 @@
     <!-- Contacts -->
     <div class="window" id="contact" role="region" aria-labelledby="contact-title">
       <div class="title-bar">
-        <div class="title" id="contact-title">Контакты</div>
+        <div class="title" id="contact-title" data-translate="contact-title">Контакты</div>
         <div class="title-controls">
           <button class="win-btn" aria-hidden="true">_</button>
           <button class="win-btn" aria-hidden="true">▢</button>
@@ -417,14 +463,14 @@
 
       <div class="window-body">
         <section>
-          <h2>Контакты</h2>
+          <h2 data-translate="contact-heading">Контакты</h2>
           <div class="contact">
-            Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
-            Телеграм: <a href="https://t.me/maskitkk" target="_blank" rel="noopener">@maskitkk</a>
+            <span data-translate="email-label">Email:</span> <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
+            <span data-translate="telegram-label">Телеграм:</span> <a href="https://t.me/maskitkk" target="_blank" rel="noopener">@maskitkk</a>
           </div>
 
           <div style="text-align:center; margin-top:10px;">
-            <a class="win-cta" href="mailto:maskitkk@gmail.com">Написать мне</a>
+            <a class="win-cta" href="mailto:maskitkk@gmail.com" data-translate="contact-cta">Написать мне</a>
           </div>
         </section>
       </div>
@@ -433,7 +479,7 @@
     <!-- Footer -->
     <div class="window" aria-hidden="true">
       <div class="title-bar">
-        <div class="title">Информация</div>
+        <div class="title" data-translate="info-title">Информация</div>
         <div class="title-controls">
           <button class="win-btn" aria-hidden="true">_</button>
           <button class="win-btn" aria-hidden="true">▢</button>
@@ -441,7 +487,7 @@
         </div>
       </div>
       <div class="window-body">
-        <footer>
+        <footer data-translate="copyright">
           © 2025 Матвей Споршев.
         </footer>
       </div>
@@ -449,8 +495,143 @@
 
   </div>
 
-  <!-- Скрипты: анимация появления + nav active -->
+  <!-- Скрипты: анимация появления + nav active + internationalization -->
   <script>
+    // Словари переводов
+    const translations = {
+      ru: {
+        'page-title': 'Матвей Споршев — Видеомонтажер',
+        'name': 'Матвей Споршев',
+        'job-title': 'Видеомонтажер | Создание запоминающихся видео',
+        'nav-about': 'О себе',
+        'nav-portfolio': 'Портфолио',
+        'nav-ai': 'ИИ-видео',
+        'nav-contact': 'Контакты',
+        'about-title': 'Обо мне',
+        'about-heading': 'О себе',
+        'about-text': 'Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроектов и ИИ-роликов.',
+        'portfolio-title': 'Портфолио',
+        'showreel-heading': 'Шоурил',
+        'examples-heading': 'Примеры работ',
+        'wedding-desc': 'Свадебный хайлайтс',
+        'tv-desc': 'Телепередача',
+        'street-desc': 'Стрит-интервью',
+        'react-desc': 'Реакт-видео',
+        'ad-desc': 'Реклама',
+        'ai-title': 'ИИ-Видео',
+        'ai-heading': 'ИИ-видео',
+        'video-not-supported': 'Ваш браузер не поддерживает видео.',
+        'contact-title': 'Контакты',
+        'contact-heading': 'Контакты',
+        'email-label': 'Email:',
+        'telegram-label': 'Телеграм:',
+        'contact-cta': 'Написать мне',
+        'info-title': 'Информация',
+        'copyright': '© 2025 Матвей Споршев.'
+      },
+      en: {
+        'page-title': 'Matvey Sporshev — Video Editor',
+        'name': 'Matvey Sporshev',
+        'job-title': 'Video Editor | Creating Memorable Videos',
+        'nav-about': 'About',
+        'nav-portfolio': 'Portfolio',
+        'nav-ai': 'AI Videos',
+        'nav-contact': 'Contact',
+        'about-title': 'About Me',
+        'about-heading': 'About Me',
+        'about-text': 'Hi! I\'m Matvey, a professional video editor with 4 years of experience. I work with all video formats — from reels to multi-hour video projects and AI videos.',
+        'portfolio-title': 'Portfolio',
+        'showreel-heading': 'Showreel',
+        'examples-heading': 'Work Examples',
+        'wedding-desc': 'Wedding Highlights',
+        'tv-desc': 'TV Show',
+        'street-desc': 'Street Interview',
+        'react-desc': 'React Video',
+        'ad-desc': 'Advertisement',
+        'ai-title': 'AI Videos',
+        'ai-heading': 'AI Videos',
+        'video-not-supported': 'Your browser does not support video.',
+        'contact-title': 'Contact',
+        'contact-heading': 'Contact',
+        'email-label': 'Email:',
+        'telegram-label': 'Telegram:',
+        'contact-cta': 'Contact Me',
+        'info-title': 'Information',
+        'copyright': '© 2025 Matvey Sporshev.'
+      }
+    };
+
+    // Система интернационализации
+    class I18n {
+      constructor() {
+        this.currentLang = this.detectLanguage();
+        this.init();
+      }
+
+      detectLanguage() {
+        // Проверяем сохраненный язык
+        const savedLang = localStorage.getItem('preferred-language');
+        if (savedLang && translations[savedLang]) {
+          return savedLang;
+        }
+
+        // Определяем язык браузера
+        const browserLang = navigator.language || navigator.languages[0];
+        if (browserLang.startsWith('ru')) {
+          return 'ru';
+        }
+        return 'en'; // По умолчанию английский
+      }
+
+      init() {
+        this.updateLanguage(this.currentLang);
+        this.setupLanguageSwitcher();
+      }
+
+      updateLanguage(lang) {
+        if (!translations[lang]) return;
+
+        this.currentLang = lang;
+        document.documentElement.lang = lang;
+        document.title = translations[lang]['page-title'];
+        
+        // Обновляем все элементы с атрибутом data-translate
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          if (translations[lang][key]) {
+            element.textContent = translations[lang][key];
+          }
+        });
+
+        // Сохраняем выбор пользователя
+        localStorage.setItem('preferred-language', lang);
+
+        // Обновляем активную кнопку языка
+        this.updateLanguageButtons();
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-lang') === this.currentLang);
+        });
+      }
+
+      setupLanguageSwitcher() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const lang = btn.getAttribute('data-lang');
+            this.updateLanguage(lang);
+          });
+        });
+
+        // Устанавливаем начальное состояние кнопок
+        this.updateLanguageButtons();
+      }
+    }
+
+    // Инициализируем систему переводов
+    const i18n = new I18n();
+
     // IntersectionObserver для появления окон
     (function(){
       const opts = {threshold: 0.08};
