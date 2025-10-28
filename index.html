@@ -3,693 +3,478 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Матвей Споршев — Видеомонтажер</title>
+<title>Матвей Споршев — Видеомонтажёр</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-  /* --- Палитра Windows 95 --- */
   :root{
-    --desktop-teal: #008080;    /* фон десктопа */
-    --win-bg: #C0C0C0;          /* фон окон */
-    --edge-light: #FFFFFF;      /* светлая грань */
-    --edge-dark: #808080;       /* темная грань */
-    --edge-darker: #000000;     /* тень */
-    --title-blue: #000080;      /* синий заголовок */
-    --title-blue-2:#000055;
-    --text: #000000;
+    --bg:#000000;
+    --glass: rgba(255,255,255,0.03);
+    --muted: #bdbdbd;
+    --accent: #ff6f61;
+    --accent-2: #7c5cff;
+    --card-bg: rgba(255,255,255,0.02);
+    --glass-2: rgba(255,255,255,0.04);
   }
 
-  /* --- Базовые стили --- */
-  html{box-sizing:border-box; -webkit-font-smoothing:antialiased;}
-  *,*::before,*::after{box-sizing:inherit}
-  body{
-    margin:0;
+  /* Reset */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+  a{color:inherit}
+
+  /* Global layout */
+  .stage{
     min-height:100vh;
-    font-family:"MS Sans Serif", Tahoma, Arial, sans-serif;
-    background:var(--desktop-teal);
-    color:var(--text);
-    -webkit-text-size-adjust:100%;
-    line-height:1.35;
-    font-size:15px;
-    padding:20px;
-  }
-
-  /* Центровка контейнера */
-  .container{
-    max-width:980px;
-    margin:0 auto;
-  }
-
-  /* --- Общий стиль окна (ретро) --- */
-  .window{
-    background:var(--win-bg);
-    border-top:2px solid var(--edge-light);
-    border-left:2px solid var(--edge-light);
-    border-right:2px solid var(--edge-dark);
-    border-bottom:2px solid var(--edge-dark);
-    box-shadow:4px 4px 0 rgba(0,0,0,0.6);
-    margin:18px 8px;
-    overflow:hidden;
-    transform:translateY(24px);
-    opacity:0;
-    transition:transform .5s ease, opacity .5s ease;
-  }
-  .window.visible{
-    transform:none;
-    opacity:1;
-  }
-
-  .title-bar{
+    position:relative;
+    overflow-x:hidden;
+    padding:36px 28px;
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:3px 8px;
-    gap:8px;
-    background: linear-gradient(180deg,var(--title-blue),var(--title-blue-2));
-    color:var(--edge-light);
-    font-weight:bold;
-    font-size:15px;
-    height:30px;
-    box-shadow: inset -1px -1px rgba(0,0,0,0.12);
+    justify-content:center;
+    align-items:flex-start;
   }
+  .wrap{width:100%;max-width:1200px;margin:0 auto}
+
+  /* Subtle animated vignette/spotlight */
+  .bg-layer{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(800px 400px at 10% 20%, rgba(124,92,255,0.10), transparent 12%),
+      radial-gradient(700px 350px at 85% 80%, rgba(255,111,97,0.08), transparent 12%),
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+    mix-blend-mode: overlay;
+    filter: blur(30px) saturate(120%);
+    transition:opacity .4s ease;
+  }
+
+  /* Top nav (sticky) */
+  header.topbar{position:sticky;top:18px;z-index:60;background:transparent;padding:6px 0;margin-bottom:18px}
+  .nav{
+    display:flex;gap:12px;align-items:center;justify-content:center;
+    backdrop-filter: blur(6px);
+  }
+  .nav .btn{
+    padding:8px 14px;border-radius:10px;font-weight:600;font-size:.95rem;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    color:var(--muted);border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,color .18s;
+  }
+  .nav .btn:hover{transform:translateY(-4px);color:#fff;box-shadow:0 10px 30px rgba(124,92,255,0.08)}
+  .brand{font-weight:800;font-size:1.05rem;letter-spacing:.2px;color:#fff;margin-right:12px}
+
+  /* Hero */
+  .hero{
+    display:flex;gap:28px;align-items:center;justify-content:space-between;padding:36px;border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    position:relative;z-index:10;overflow:hidden;
+  }
+  .hero-left{flex:1;min-width:260px}
+  .hero-right{width:420px;max-width:42%;min-width:260px;display:flex;align-items:center;justify-content:center;position:relative}
 
   .title{
-    user-select:none;
-  }
-
-  .title-controls{
-    display:flex;
-    gap:6px;
-    align-items:center;
-  }
-
-  /* Кнопки заголовка в стиле Win95 */
-  .win-btn{
-    width:20px;
-    height:18px;
-    border:1px solid var(--edge-dark);
-    background:var(--win-bg);
-    padding:0;
-    margin:0;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    cursor:default;
-    box-shadow: inset -1px -1px var(--edge-light), inset 1px 1px rgba(0,0,0,0.18);
-    font-size:12px;
-    line-height:1;
-    color:var(--text);
-  }
-  .win-btn:active{
-    box-shadow: inset 1px 1px var(--edge-light), inset -1px -1px rgba(0,0,0,0.18);
-    transform:translateY(1px);
-  }
-
-  /* Содержимое окна */
-  .window .window-body{
-    padding:14px;
-    background:#fff;
-    border-top:1px solid var(--edge-dark);
-  }
-
-  header h1{
-    margin:4px 0 2px;
-    font-size:26px;
-    text-align:center;
-  }
-  header p{
+    font-size:clamp(28px, 4.5vw, 48px);
+    line-height:1.02;
+    font-weight:800;
     margin:0 0 8px;
-    text-align:center;
-    color:#222;
-    font-size:15px;
+    letter-spacing:-0.02em;
+    color:linear-gradient;
+    background:linear-gradient(90deg,var(--accent-2),var(--accent));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    transform:translateY(6px);
+    opacity:0;
   }
+  .subtitle{font-weight:400;color:var(--muted);margin:0 0 18px;opacity:0;transform:translateY(8px)}
+  .cta-row{display:flex;gap:12px;align-items:center;opacity:0;transform:translateY(10px)}
+  .cta{padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#08101a;font-weight:700;border:none;cursor:pointer;box-shadow:0 12px 30px rgba(124,92,255,0.12);transition:transform .18s}
+  .cta.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+  .cta:hover{transform:translateY(-4px)}
 
-  /* Навигация */
-  nav{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    padding:8px;
-    background:var(--win-bg);
-    border-top:2px solid var(--edge-light);
-    border-bottom:2px solid var(--edge-dark);
-    margin-top:6px;
+  /* small meta */
+  .meta{display:flex;gap:14px;align-items:center;color:var(--muted);font-size:.95rem;margin-top:14px;opacity:0;transform:translateY(8px)}
+  .meta .chip{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+
+  /* Right hero preview (mini showreel card) */
+  .card-preview{width:100%;height:260px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 40px rgba(0,0,0,0.6);position:relative}
+  .card-preview iframe{width:100%;height:100%;display:block;border:none}
+  .card-overlay{
+    position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;padding:18px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.45));
   }
+  .card-overlay .label{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-weight:700;color:#08101a}
 
-  .nav-link{
-    font-size:14px;
-    text-decoration:none;
-    color:var(--text);
-    padding:6px 10px;
-    display:inline-block;
-    border-top:2px solid var(--edge-light);
-    border-left:2px solid var(--edge-light);
-    border-bottom:2px solid var(--edge-dark);
-    border-right:2px solid var(--edge-dark);
-    background:var(--win-bg);
-    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
-    transition:transform .08s ease, background .12s ease;
-  }
-  .nav-link:active,
-  .nav-link.pressed{
-    transform:translateY(2px);
-    box-shadow:none;
-    border-top:2px solid var(--edge-dark);
-    border-left:2px solid var(--edge-dark);
-    border-bottom:2px solid var(--edge-light);
-    border-right:2px solid var(--edge-light);
-  }
-  .nav-link:focus{outline:2px dotted #333; outline-offset:3px}
+  /* Sections */
+  section{margin-top:28px;position:relative;z-index:8}
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .section-head h2{font-size:1.15rem;color:var(--accent);margin:0;font-weight:800;letter-spacing:.6px}
+  .section-head p{color:var(--muted);margin:0;font-size:.95rem}
 
-  /* Переключатель языка */
-  .lang-switcher{
-    position:absolute;
-    top:10px;
-    right:10px;
-    display:flex;
-    gap:4px;
-    z-index:1000;
-  }
-
-  .lang-btn{
-    padding:4px 8px;
-    font-size:12px;
-    border:1px solid var(--edge-dark);
-    background:var(--win-bg);
-    color:var(--text);
-    cursor:pointer;
-    box-shadow: inset -1px -1px var(--edge-light), inset 1px 1px rgba(0,0,0,0.18);
-    transition:all .1s ease;
-  }
-
-  .lang-btn.active{
-    background:var(--title-blue);
-    color:var(--edge-light);
-    box-shadow: inset 1px 1px rgba(0,0,0,0.3);
-  }
-
-  .lang-btn:hover:not(.active){
-    background:#D0D0D0;
-  }
-
-  .lang-btn:active{
-    transform:translateY(1px);
-  }
-
-  /* Секции */
-  section{margin:0}
-  h2{
-    font-size:18px;
-    margin:6px 0 12px;
-    text-align:center;
-    padding-bottom:8px;
-    border-bottom:1px dashed var(--edge-dark);
-  }
-
-  .about-content,
-  .contact{text-align:center; font-size:15px; color:#111; padding:6px 12px}
-
-  /* Сетка портфолио */
-  .portfolio-grid,
-  .ai-video-grid{
-    display:grid;
-    gap:12px;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    margin:6px 0;
-  }
-
+  /* Grid / cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
   .media-card{
-    background:#E0E0E0;
-    border-top:2px solid var(--edge-light);
-    border-left:2px solid var(--edge-light);
-    border-right:2px solid var(--edge-dark);
-    border-bottom:2px solid var(--edge-dark);
-    padding:8px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    align-items:stretch;
+    background:var(--card-bg);border-radius:14px;padding:12px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+    transition:transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .35s;
+    will-change:transform;
+  }
+  .media-card:hover{transform:translateY(-12px) rotateX(1deg);box-shadow:0 30px 60px rgba(2,6,23,0.6)}
+  .media-card .frame{width:100%;height:200px;border-radius:10px;overflow:hidden;background:#000}
+  .media-card iframe, .media-card video{width:100%;height:100%;object-fit:cover;display:block;border:none}
+  .media-card .meta-title{margin-top:10px;font-weight:700}
+  .media-card .meta-sub{color:var(--muted);font-size:.92rem;margin-top:6px}
+  .overlay-title{
+    position:absolute;left:16px;top:14px;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.2));
+    border:1px solid rgba(255,255,255,0.04);font-weight:700;color:#fff;font-size:.9rem;backdrop-filter:blur(6px)
   }
 
-  iframe, video{
-    width:100%;
-    height:250px;
-    border:1px inset var(--edge-dark);
-    display:block;
-    background:#000;
-    object-fit:cover;
-  }
-  .video-desc{
-    font-size:13px;
-    text-align:center;
-    color:#111;
-  }
+  /* Contact / details */
+  .card-contact{display:flex;flex-direction:column;gap:8px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .contact a{color:var(--accent);font-weight:700}
 
-  /* Соц. кнопка в ретро стиле */
-  .social-link{
-    display:inline-block;
-    text-decoration:none;
-    padding:6px 12px;
-    margin-top:6px;
-    border-top:2px solid var(--edge-light);
-    border-left:2px solid var(--edge-light);
-    border-right:2px solid var(--edge-dark);
-    border-bottom:2px solid var(--edge-dark);
-    background:var(--win-bg);
-    color:var(--text);
-    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
-  }
-  .social-link:active{transform:translateY(2px); box-shadow:none}
+  /* Footer */
+  footer{margin-top:48px;padding:50px 0;text-align:center;color:var(--muted);font-size:.95rem}
 
-  /* Футер */
-  footer .window-body{
-    text-align:center;
-    font-size:13px;
-    background:var(--win-bg);
-    border-top:1px solid var(--edge-dark);
+  /* Small screens */
+  @media (max-width:880px){
+    .hero{flex-direction:column}
+    .hero-right{width:100%;max-width:100%}
+    .card-preview{height:200px}
   }
 
-  /* Адаптив */
-  @media (max-width:720px){
-    iframe, video{height:200px}
-    header h1{font-size:22px}
-    body{padding:12px}
-    .lang-switcher{
-      position:static;
-      justify-content:center;
-      margin-bottom:10px;
-    }
-  }
+  /* Animations: initial reveal helpers */
+  .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease, transform .6s cubic-bezier(.2,.9,.2,1)}
+  .reveal.visible{opacity:1;transform:none}
 
-  /* Фокус и доступность */
-  a:focus, button:focus{outline:3px solid rgba(0,0,0,0.15); outline-offset:3px}
-
-  /* --- Доп. мелкие анимации (не мешают ретро) --- */
-  .media-card:hover{transform:translateY(-3px); transition:transform .18s ease}
-  .win-cta{
-    display:inline-block;
-    padding:6px 10px;
-    margin-top:8px;
-    font-weight:bold;
-    background:var(--win-bg);
-    border-top:2px solid var(--edge-light);
-    border-left:2px solid var(--edge-light);
-    border-right:2px solid var(--edge-dark);
-    border-bottom:2px solid var(--edge-dark);
-    box-shadow:2px 2px 0 rgba(0,0,0,0.15);
-    cursor:pointer;
-  }
-  .win-cta:active{transform:translateY(2px); box-shadow:none}
-
-  /* small helper for hidden (visually) text */
-  .sr-only {position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+  /* Cursor light */
+  .cursor-light{position:fixed;pointer-events:none;z-index:9;mix-blend-mode:screen;filter:blur(40px);width:420px;height:420px;border-radius:50%;opacity:.65;background:radial-gradient(circle at center, rgba(124,92,255,0.25), rgba(255,111,97,0.08) 40%, transparent 60%)}
 </style>
 </head>
 <body>
-  <!-- Language Switcher -->
-  <div class="lang-switcher">
-    <button class="lang-btn" data-lang="ru">RU</button>
-    <button class="lang-btn" data-lang="en">EN</button>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="cursor-light" id="cursorLight" style="left:-9999px;top:-9999px"></div>
+
+  <div class="stage">
+    <div class="wrap">
+
+      <!-- Top nav -->
+      <header class="topbar">
+        <div class="nav">
+          <div class="brand">Matvey Sporshev</div>
+          <button class="btn" data-scroll="#about">О себе</button>
+          <button class="btn" data-scroll="#portfolio">Портфолио</button>
+          <button class="btn" data-scroll="#ai-videos">ИИ-видео</button>
+          <button class="btn" data-scroll="#experience">Опыт</button>
+          <button class="btn" data-scroll="#contact">Контакты</button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="hero" aria-label="Вступление">
+        <div class="hero-left">
+          <h1 class="title reveal" id="mainTitle">Споршев Матвей</h1>
+          <p class="subtitle reveal" id="mainSubtitle">Видеомонтажёр — сочетание классики монтажа и прогрессивных AI-решений</p>
+
+          <div class="meta reveal" id="metaRow">
+            <div class="chip">Нижний Новгород, Россия</div>
+            <div class="chip">+7 (904) 040-6396</div>
+            <div class="chip">maskitkk@gmail.com</div>
+          </div>
+
+          <div class="cta-row" style="margin-top:18px">
+            <button class="cta" onclick="location.href='mailto:maskitkk@gmail.com'">Написать мне</button>
+            <button class="cta secondary" onclick="document.querySelector('[data-scroll=\"#portfolio\"]').click()">Посмотреть работы</button>
+          </div>
+
+        </div>
+
+        <div class="hero-right">
+          <div class="card-preview reveal" id="previewCard">
+            <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel"></iframe>
+            <div class="card-overlay">
+              <div class="label">Шоурил</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about" class="reveal">
+        <div class="section-head">
+          <h2>О себе</h2>
+          <p>Коротко о профиле и подходе</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start">
+          <div>
+            <p style="color:var(--muted);font-size:1rem;line-height:1.6">
+              Опытный видеомонтажёр с более чем шестилетним стажем работы в разных форматах — от свадебных и праздничных роликов до короткого контента для соцсетей и интервью. Уверенно совмещаю классический монтаж с современными AI-инструментами, создавая выразительные и динамичные видео. Работаю в международных командах, использую английский язык ежедневно. В последнее время занимаю позицию Quality Control в компании EditValue, отвечаю за финальный просмотр и стандартизацию качества контента.
+            </p>
+          </div>
+
+          <div>
+            <div class="card-contact">
+              <div style="font-weight:700">Контакты</div>
+              <div>📍 Нижний Новгород, Россия</div>
+              <div>📞 +7 (904) 040-6396</div>
+              <div>✉️ <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a></div>
+              <div style="margin-top:8px"><a class="win-cta" href="mailto:maskitkk@gmail.com">Написать</a></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Portfolio -->
+      <section id="portfolio" class="reveal">
+        <div class="section-head">
+          <h2>Портфолио</h2>
+          <p>Шоурил и примеры работ</p>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div class="grid" style="margin-bottom:8px">
+            <!-- Showreel card (large) -->
+            <div class="media-card" style="grid-column: span 2;">
+              <div class="overlay-title">Showreel</div>
+              <div class="frame"><iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel Матвея"></iframe></div>
+              <div class="meta-title">Showreel</div>
+              <div class="meta-sub">Короткая презентация работ</div>
+            </div>
+
+            <!-- other smaller cards -->
+            <div class="media-card">
+              <div class="overlay-title">Свадьба</div>
+              <div class="frame"><iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" title="Свадебный хайлайт"></iframe></div>
+              <div class="meta-title">Свадебный хайлайт</div>
+              <div class="meta-sub">Хайлайты и эмоциональные моменты</div>
+            </div>
+
+            <div class="media-card">
+              <div class="overlay-title">TV</div>
+              <div class="frame"><iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" title="Телепередача"></iframe></div>
+              <div class="meta-title">Телепередача</div>
+              <div class="meta-sub">Монтаж для телепроектов</div>
+            </div>
+
+            <div class="media-card">
+              <div class="overlay-title">Интервью</div>
+              <div class="frame"><iframe src="https://www.youtube.com/embed/OagICGBqHAg" title="Стрит-интервью"></iframe></div>
+              <div class="meta-title">Стрит-интервью</div>
+              <div class="meta-sub">Стрит-формат и интервью</div>
+            </div>
+
+            <div class="media-card">
+              <div class="overlay-title">Reel</div>
+              <div class="frame"><iframe src="https://www.youtube.com/embed/BFqSwqecv2k" title="Реакт-видео"></iframe></div>
+              <div class="meta-title">Реакт-видео</div>
+              <div class="meta-sub">Короткие форматы для соцсетей</div>
+            </div>
+
+            <div class="media-card">
+              <div class="overlay-title">Реклама</div>
+              <div class="frame"><iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" title="Реклама"></iframe></div>
+              <div class="meta-title">Реклама</div>
+              <div class="meta-sub">Коммерческие ролики</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI videos -->
+      <section id="ai-videos" class="reveal">
+        <div class="section-head">
+          <h2>ИИ-видео</h2>
+          <p>Эксперименты с генеративными инструментами</p>
+        </div>
+
+        <div class="grid">
+          <div class="media-card">
+            <div class="overlay-title">AI</div>
+            <div class="frame"><video autoplay muted loop playsinline><source src="bird.mp4" type="video/mp4"></video></div>
+            <div class="meta-title">AI: bird.mp4</div>
+            <div class="meta-sub">Генеративный эксперимент</div>
+          </div>
+
+          <div class="media-card">
+            <div class="overlay-title">AI</div>
+            <div class="frame"><video autoplay muted loop playsinline><source src="CAKE_AFTER.mp4" type="video/mp4"></video></div>
+            <div class="meta-title">AI: CAKE_AFTER.mp4</div>
+            <div class="meta-sub">AI-визуализация</div>
+          </div>
+
+          <div class="media-card">
+            <div class="overlay-title">9x16</div>
+            <div class="frame"><video autoplay muted loop playsinline><source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4"></video></div>
+            <div class="meta-title">AI: 9x16 demo</div>
+            <div class="meta-sub">Вертикальные форматы</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:18px"><a class="btn" href="https://www.instagram.com/synth.pix" target="_blank" rel="noopener">@synth.pix</a></div>
+      </section>
+
+      <!-- Experience & Skills -->
+      <section id="experience" class="reveal">
+        <div class="section-head">
+          <h2>Опыт работы</h2>
+          <p>Ключевые места и обязанности</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+          <div>
+            <div style="color:var(--muted);line-height:1.6">
+              <strong>AI-видео — Видео-монтажёр</strong><br>
+              Октябрь 2024 — настоящее время<br>
+              Создание оригинального контента с использованием генеративных AI-инструментов. Комбинирование традиционного монтажа и нейросетевых подходов для визуальной выразительности. Разработка сценариев и визуальных решений для публикации на медиа-платформах.
+            </div>
+
+            <div style="height:14px"></div>
+
+            <div style="color:var(--muted);line-height:1.6">
+              <strong>EditValue — Видео-монтажёр и Quality Control</strong><br>
+              Февраль 2022 — настоящее время<br>
+              Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке; организация рабочего процесса и соблюдение сроков.
+            </div>
+
+            <div style="height:14px"></div>
+
+            <div style="color:var(--muted);line-height:1.6">
+              <strong>Оптимедиа — Видео-монтажёр</strong><br>
+              Сентябрь 2019 — Декабрь 2023<br>
+              Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами; быстрый выпуск материалов под жёсткие дедлайны; цветокоррекция, аудиомикс и оптимизация визуального ряда.
+            </div>
+          </div>
+
+          <aside>
+            <div class="card-contact">
+              <div style="font-weight:800">Навыки</div>
+              <div style="color:var(--muted);margin-top:6px">
+                Adobe Premiere Pro, DaVinci Resolve, After Effects, Final Cut Pro, Цветокоррекция, Обработка звука, Motion Design (базовый), AI-видео и генеративные инструменты, Проектное управление.
+                <div style="height:8px"></div>
+                <strong>Языки:</strong><br>Русский — родной; Английский — B2 (ежедневное использование).
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" class="reveal">
+        <div class="section-head">
+          <h2>Контакты</h2>
+          <p>Свяжитесь со мной</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:24px">
+          <div style="color:var(--muted);line-height:1.6">
+            Если вам нужен монтаж для свадьбы, рекламы, интервью или эксперименты с AI-видео — пишите. Готов обсуждать проекты разного масштаба и формата.
+            <div style="height:12px"></div>
+            Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br>
+            Телеграм: <a href="https://t.me/maskitkk" target="_blank">@maskitkk</a><br>
+            Телефон: +7 (904) 040-6396
+          </div>
+
+          <div>
+            <form id="contactForm" class="card-contact" onsubmit="event.preventDefault(); alert('Форма отправлена (заглушка) — напиши на почту maskitkk@gmail.com')">
+              <label style="font-weight:700;margin-bottom:6px">Написать сообщение</label>
+              <input required placeholder="Имя" name="name" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-bottom:8px;width:100%">
+              <input required type="email" placeholder="Email" name="email" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-bottom:8px;width:100%">
+              <textarea required placeholder="Сообщение" name="msg" rows="4" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-bottom:8px;width:100%"></textarea>
+              <button class="cta" type="submit" style="width:100%">Отправить</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        © 2025 Споршев Матвей — maskitkk@gmail.com
+      </footer>
+
+    </div>
   </div>
 
-  <div class="container">
+<script>
+/* Smooth scroll for nav buttons */
+document.querySelectorAll('[data-scroll]').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    const sel = btn.getAttribute('data-scroll');
+    const el = document.querySelector(sel);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
 
-    <!-- Header window -->
-    <div class="window" id="top-window" role="region" aria-label="Главное окно">
-      <div class="title-bar" aria-hidden="true">
-        <div class="title" data-translate="page-title">Матвей Споршев — Видеомонтажер</div>
-        <div class="title-controls" role="toolbar" aria-label="Управление окном">
-          <button class="win-btn" title="Minimize" aria-hidden="true">_</button>
-          <button class="win-btn" title="Maximize" aria-hidden="true">▢</button>
-          <button class="win-btn" title="Close" aria-hidden="true">✕</button>
-        </div>
-      </div>
-
-      <div class="window-body">
-        <header>
-          <h1 data-translate="name">Матвей Споршев</h1>
-          <p data-translate="job-title">Видеомонтажер | Создание запоминающихся видео</p>
-        </header>
-
-        <nav role="navigation" aria-label="Навигация по сайту">
-          <a class="nav-link" href="#about" data-translate="nav-about">О себе</a>
-          <a class="nav-link" href="#portfolio" data-translate="nav-portfolio">Портфолио</a>
-          <a class="nav-link" href="#ai-videos" data-translate="nav-ai">ИИ-видео</a>
-          <a class="nav-link" href="#contact" data-translate="nav-contact">Контакты</a>
-        </nav>
-
-      </div>
-    </div>
-
-    <!-- About -->
-    <div class="window" id="about" role="region" aria-labelledby="about-title">
-      <div class="title-bar">
-        <div class="title" id="about-title" data-translate="about-title">Обо мне</div>
-        <div class="title-controls">
-          <button class="win-btn" aria-hidden="true">_</button>
-          <button class="win-btn" aria-hidden="true">▢</button>
-          <button class="win-btn" aria-hidden="true">✕</button>
-        </div>
-      </div>
-      <div class="window-body">
-        <section>
-          <h2 data-translate="about-heading">О себе</h2>
-          <div class="about-content" data-translate="about-text">
-            Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроектов и ИИ-роликов.
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- Portfolio -->
-    <div class="window" id="portfolio" role="region" aria-labelledby="portfolio-title">
-      <div class="title-bar">
-        <div class="title" id="portfolio-title" data-translate="portfolio-title">Портфолио</div>
-        <div class="title-controls">
-          <button class="win-btn" aria-hidden="true">_</button>
-          <button class="win-btn" aria-hidden="true">▢</button>
-          <button class="win-btn" aria-hidden="true">✕</button>
-        </div>
-      </div>
-
-      <div class="window-body">
-        <section aria-label="Шоурил">
-          <h2 data-translate="showreel-heading">Шоурил</h2>
-          <div class="media-card" style="padding:6px;">
-            <!-- Showreel -->
-            <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" frameborder="0" allowfullscreen title="Showreel Матвея"></iframe>
-          </div>
-
-          <h2 style="margin-top:14px" data-translate="examples-heading">Примеры работ</h2>
-          <div class="portfolio-grid" aria-live="polite">
-            <div class="media-card">
-              <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" frameborder="0" allowfullscreen title="Свадебный хайлайт"></iframe>
-              <div class="video-desc" data-translate="wedding-desc">Свадебный хайлайтс</div>
-            </div>
-            <div class="media-card">
-              <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" frameborder="0" allowfullscreen title="Телепередача"></iframe>
-              <div class="video-desc" data-translate="tv-desc">Телепередача</div>
-            </div>
-            <div class="media-card">
-              <iframe src="https://www.youtube.com/embed/OagICGBqHAg" frameborder="0" allowfullscreen title="Стрит-интервью"></iframe>
-              <div class="video-desc" data-translate="street-desc">Стрит-интервью</div>
-            </div>
-            <div class="media-card">
-              <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" frameborder="0" allowfullscreen title="Реакт-видео"></iframe>
-              <div class="video-desc" data-translate="react-desc">Реакт-видео</div>
-            </div>
-            <div class="media-card">
-              <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" frameborder="0" allowfullscreen title="Реклама"></iframe>
-              <div class="video-desc" data-translate="ad-desc">Реклама</div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- AI Videos -->
-    <div class="window" id="ai-videos" role="region" aria-labelledby="ai-title">
-      <div class="title-bar">
-        <div class="title" id="ai-title" data-translate="ai-title">ИИ-Видео</div>
-        <div class="title-controls">
-          <button class="win-btn" aria-hidden="true">_</button>
-          <button class="win-btn" aria-hidden="true">▢</button>
-          <button class="win-btn" aria-hidden="true">✕</button>
-        </div>
-      </div>
-
-      <div class="window-body">
-        <section>
-          <h2 data-translate="ai-heading">ИИ-видео</h2>
-          <div class="ai-video-grid">
-            <div class="media-card">
-              <video autoplay muted loop playsinline>
-                <source src="bird.mp4" type="video/mp4">
-                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
-              </video>
-              <div class="video-desc">AI: bird.mp4</div>
-            </div>
-            <div class="media-card">
-              <video autoplay muted loop playsinline>
-                <source src="CAKE_AFTER.mp4" type="video/mp4">
-                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
-              </video>
-              <div class="video-desc">AI: CAKE_AFTER.mp4</div>
-            </div>
-            <div class="media-card">
-              <video autoplay muted loop playsinline>
-                <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
-                <span data-translate="video-not-supported">Ваш браузер не поддерживает видео.</span>
-              </video>
-              <div class="video-desc">AI: 9x16 demo</div>
-            </div>
-          </div>
-
-          <div style="text-align:center; margin-top:10px;">
-            <a class="social-link" href="https://www.instagram.com/synth.pix" target="_blank" rel="noopener"> @synth.pix </a>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- Contacts -->
-    <div class="window" id="contact" role="region" aria-labelledby="contact-title">
-      <div class="title-bar">
-        <div class="title" id="contact-title" data-translate="contact-title">Контакты</div>
-        <div class="title-controls">
-          <button class="win-btn" aria-hidden="true">_</button>
-          <button class="win-btn" aria-hidden="true">▢</button>
-          <button class="win-btn" aria-hidden="true">✕</button>
-        </div>
-      </div>
-
-      <div class="window-body">
-        <section>
-          <h2 data-translate="contact-heading">Контакты</h2>
-          <div class="contact">
-            <span data-translate="email-label">Email:</span> <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a><br />
-            <span data-translate="telegram-label">Телеграм:</span> <a href="https://t.me/maskitkk" target="_blank" rel="noopener">@maskitkk</a>
-          </div>
-
-          <div style="text-align:center; margin-top:10px;">
-            <a class="win-cta" href="mailto:maskitkk@gmail.com" data-translate="contact-cta">Написать мне</a>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="window" aria-hidden="true">
-      <div class="title-bar">
-        <div class="title" data-translate="info-title">Информация</div>
-        <div class="title-controls">
-          <button class="win-btn" aria-hidden="true">_</button>
-          <button class="win-btn" aria-hidden="true">▢</button>
-          <button class="win-btn" aria-hidden="true">✕</button>
-        </div>
-      </div>
-      <div class="window-body">
-        <footer data-translate="copyright">
-          © 2025 Матвей Споршев.
-        </footer>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Скрипты: анимация появления + nav active + internationalization -->
-  <script>
-    // Словари переводов
-    const translations = {
-      ru: {
-        'page-title': 'Матвей Споршев — Видеомонтажер',
-        'name': 'Матвей Споршев',
-        'job-title': 'Видеомонтажер | Создание запоминающихся видео',
-        'nav-about': 'О себе',
-        'nav-portfolio': 'Портфолио',
-        'nav-ai': 'ИИ-видео',
-        'nav-contact': 'Контакты',
-        'about-title': 'Обо мне',
-        'about-heading': 'О себе',
-        'about-text': 'Привет! Я Матвей, профессиональный видеомонтажер с 4-летним опытом. Работаю с видео всех форматов — от рилсов до многочасовых видеопроектов и ИИ-роликов.',
-        'portfolio-title': 'Портфолио',
-        'showreel-heading': 'Шоурил',
-        'examples-heading': 'Примеры работ',
-        'wedding-desc': 'Свадебный хайлайтс',
-        'tv-desc': 'Телепередача',
-        'street-desc': 'Стрит-интервью',
-        'react-desc': 'Реакт-видео',
-        'ad-desc': 'Реклама',
-        'ai-title': 'ИИ-Видео',
-        'ai-heading': 'ИИ-видео',
-        'video-not-supported': 'Ваш браузер не поддерживает видео.',
-        'contact-title': 'Контакты',
-        'contact-heading': 'Контакты',
-        'email-label': 'Email:',
-        'telegram-label': 'Телеграм:',
-        'contact-cta': 'Написать мне',
-        'info-title': 'Информация',
-        'copyright': '© 2025 Матвей Споршев.'
-      },
-      en: {
-        'page-title': 'Matvey Sporshev — Video Editor',
-        'name': 'Matvey Sporshev',
-        'job-title': 'Video Editor | Creating Memorable Videos',
-        'nav-about': 'About',
-        'nav-portfolio': 'Portfolio',
-        'nav-ai': 'AI Videos',
-        'nav-contact': 'Contact',
-        'about-title': 'About Me',
-        'about-heading': 'About Me',
-        'about-text': 'Hi! I\'m Matvey, a professional video editor with 4 years of experience. I work with all video formats — from reels to multi-hour video projects and AI videos.',
-        'portfolio-title': 'Portfolio',
-        'showreel-heading': 'Showreel',
-        'examples-heading': 'Work Examples',
-        'wedding-desc': 'Wedding Highlights',
-        'tv-desc': 'TV Show',
-        'street-desc': 'Street Interview',
-        'react-desc': 'React Video',
-        'ad-desc': 'Advertisement',
-        'ai-title': 'AI Videos',
-        'ai-heading': 'AI Videos',
-        'video-not-supported': 'Your browser does not support video.',
-        'contact-title': 'Contact',
-        'contact-heading': 'Contact',
-        'email-label': 'Email:',
-        'telegram-label': 'Telegram:',
-        'contact-cta': 'Contact Me',
-        'info-title': 'Information',
-        'copyright': '© 2025 Matvey Sporshev.'
-      }
-    };
-
-    // Система интернационализации
-    class I18n {
-      constructor() {
-        this.currentLang = this.detectLanguage();
-        this.init();
-      }
-
-      detectLanguage() {
-        // Проверяем сохраненный язык
-        const savedLang = localStorage.getItem('preferred-language');
-        if (savedLang && translations[savedLang]) {
-          return savedLang;
-        }
-
-        // Определяем язык браузера
-        const browserLang = navigator.language || navigator.languages[0];
-        if (browserLang.startsWith('ru')) {
-          return 'ru';
-        }
-        return 'en'; // По умолчанию английский
-      }
-
-      init() {
-        this.updateLanguage(this.currentLang);
-        this.setupLanguageSwitcher();
-      }
-
-      updateLanguage(lang) {
-        if (!translations[lang]) return;
-
-        this.currentLang = lang;
-        document.documentElement.lang = lang;
-        document.title = translations[lang]['page-title'];
-        
-        // Обновляем все элементы с атрибутом data-translate
-        document.querySelectorAll('[data-translate]').forEach(element => {
-          const key = element.getAttribute('data-translate');
-          if (translations[lang][key]) {
-            element.textContent = translations[lang][key];
-          }
-        });
-
-        // Сохраняем выбор пользователя
-        localStorage.setItem('preferred-language', lang);
-
-        // Обновляем активную кнопку языка
-        this.updateLanguageButtons();
-      }
-
-      updateLanguageButtons() {
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.getAttribute('data-lang') === this.currentLang);
-        });
-      }
-
-      setupLanguageSwitcher() {
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const lang = btn.getAttribute('data-lang');
-            this.updateLanguage(lang);
-          });
-        });
-
-        // Устанавливаем начальное состояние кнопок
-        this.updateLanguageButtons();
-      }
+/* Reveal on scroll */
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Add visible class to animate children if needed
+      e.target.classList.add('visible');
+      e.target.style.transitionDelay = (Math.random()*0.2)+'s';
+      io.unobserve(e.target);
     }
+  });
+},{threshold:0.08});
+reveals.forEach(r=>io.observe(r));
 
-    // Инициализируем систему переводов
-    const i18n = new I18n();
+/* Stagger reveal for title/subtitle/meta/preview */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>document.getElementById('mainTitle').classList.add('visible'),140);
+  setTimeout(()=>document.getElementById('mainSubtitle').classList.add('visible'),260);
+  setTimeout(()=>document.getElementById('metaRow').classList.add('visible'),420);
+  setTimeout(()=>document.getElementById('previewCard').classList.add('visible'),520);
+});
 
-    // IntersectionObserver для появления окон
-    (function(){
-      const opts = {threshold: 0.08};
-      const io = new IntersectionObserver((entries, obs)=>{
-        entries.forEach(e=>{
-          if(e.isIntersecting){
-            e.target.classList.add('visible');
-            obs.unobserve(e.target);
-          }
-        });
-      }, opts);
+/* Cursor light movement and bg-layer parallax */
+const cursor = document.getElementById('cursorLight');
+const bgLayer = document.getElementById('bgLayer');
+document.addEventListener('mousemove', (ev)=>{
+  const x = ev.clientX;
+  const y = ev.clientY;
+  // move the soft light
+  cursor.style.transform = `translate3d(${x-210}px, ${y-210}px, 0)`;
+  cursor.style.opacity = 0.9;
+  // move bg gradients subtly
+  const w = window.innerWidth, h = window.innerHeight;
+  const px = (x/w - 0.5) * 30;
+  const py = (y/h - 0.5) * 30;
+  bgLayer.style.backgroundPosition = `${50+px}% ${50+py}% , ${85+px}% ${80+py}% , 50% 50%`;
+});
 
-      document.querySelectorAll('.window').forEach(win => io.observe(win));
-    })();
+/* Parallax-looking tilt on cards via mousemove (subtle) */
+const cards = document.querySelectorAll('.media-card');
+cards.forEach(card=>{
+  card.addEventListener('mousemove',(e)=>{
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = (e.clientX - cx);
+    const dy = (e.clientY - cy);
+    const rx = (dy / rect.height) * 6; // rotateX
+    const ry = (dx / rect.width) * -6; // rotateY
+    card.style.transform = `perspective(900px) translateZ(0) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
+  });
+  card.addEventListener('mouseleave', ()=> card.style.transform = '');
+});
 
-    // Нажимаемая анимация для nav (вдавливание)
-    document.querySelectorAll('.nav-link').forEach(a=>{
-      a.addEventListener('mousedown', ()=> a.classList.add('pressed'));
-      a.addEventListener('mouseup', ()=> setTimeout(()=>a.classList.remove('pressed'),150));
-      a.addEventListener('mouseleave', ()=> a.classList.remove('pressed'));
-    });
+/* Make overlay-title appear on reveal */
+document.querySelectorAll('.overlay-title').forEach(el=>{
+  el.style.opacity = .98;
+});
 
-    // Удобная мелочь: при клике на заголовочные кнопки - имитация (не закрывает ничего)
-    document.querySelectorAll('.title-controls .win-btn').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        // краткий эффект нажатия
-        btn.classList.add('pressed');
-        setTimeout(()=> btn.classList.remove('pressed'),180);
-      });
-    });
+/* Tiny parallax scroll for preview card */
+const preview = document.getElementById('previewCard');
+window.addEventListener('scroll', ()=>{
+  if(!preview) return;
+  const rect = preview.getBoundingClientRect();
+  const mid = window.innerHeight/2;
+  const diff = rect.top - mid;
+  preview.style.transform = `translateY(${diff* -0.02 }px)`;
+});
 
-    // Для лучшей навигации — подсвечиваем пункт меню при прокрутке
-    (function(){
-      const sections = Array.from(document.querySelectorAll('section'));
-      const navLinks = Array.from(document.querySelectorAll('.nav-link'));
-      const secsMap = sections.map(s => ({id:s.parentElement.id || s.parentElement.getAttribute('id'), top:0, el:s}));
-      function sync(){
-        const scroll = window.scrollY + innerHeight/3;
-        let activeId = null;
-        for(const s of secsMap){
-          const rect = s.el.getBoundingClientRect();
-          const pageTop = window.scrollY + rect.top;
-          if(pageTop <= scroll) activeId = s.el.parentElement.id;
-        }
-        navLinks.forEach(n=> n.classList.toggle('active', n.getAttribute('href') === ('#'+activeId)));
-      }
-      window.addEventListener('scroll', throttle(sync,150));
-      window.addEventListener('resize', throttle(sync,250));
-      sync();
-
-      function throttle(fn, wait){
-        let t=0;
-        return function(...a){
-          const now = Date.now();
-          if(now - t > wait){ t=now; fn.apply(this,a); }
-        }
-      }
-    })();
-  </script>
+/* basic form placeholder handler (stub) */
+document.getElementById('contactForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  // you can replace below with actual form handling (AJAX)
+  alert('Спасибо! Сообщение отправлено (заглушка). Напиши также на maskitkk@gmail.com');
+});
+</script>
 </body>
 </html>
