@@ -180,7 +180,8 @@
 
           <div class="cta-row" style="margin-top:18px">
             <button class="cta" onclick="location.href='mailto:maskitkk@gmail.com'">Написать мне</button>
-            <button class="cta secondary" onclick="document.querySelector('[data-scroll=\"#portfolio\"]').click()">Посмотреть работы</button>
+            <button class="cta secondary" onclick="document.querySelector('[data-scroll=\'#portfolio\']').click()">Посмотреть работы</button>
+
           </div>
 
         </div>
@@ -371,7 +372,9 @@
           </div>
 
           <div>
-            <form id="contactForm" class="card-contact" onsubmit="event.preventDefault(); alert('Форма отправлена (заглушка) — напиши на почту maskitkk@gmail.com')">
+            <form id="contactForm" class="card-contact" onsubmit="event.preventDefault(); alert('Форма отправлена (заглушка) — напиши на почту maskitkk@gmail.com');">
+
+
               <label style="font-weight:700;margin-bottom:6px">Написать сообщение</label>
               <input required placeholder="Имя" name="name" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-bottom:8px;width:100%">
               <input required type="email" placeholder="Email" name="email" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-bottom:8px;width:100%">
