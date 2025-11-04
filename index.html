@@ -1,398 +1,697 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Матвей Споршев — Видеомонтажёр</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#000000;
-    --glass: rgba(255,255,255,0.03);
-    --muted: #bdbdbd;
-    --accent: #ff6f61;
-    --accent-2: #7c5cff;
-    --card-bg: rgba(255,255,255,0.02);
-    --glass-2: rgba(255,255,255,0.04);
-    --wrap-max:1200px;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark">
+  <title>Матвей Споршев — Видеомонтажёр</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --glass: rgba(255,255,255,0.03);
+      --muted: #bdbdbd;
+      --accent: #ff6f61;
+      --accent-2: #7c5cff;
+      --card-bg: rgba(255,255,255,0.02);
+      --wrap-max: 1200px;
+    }
 
-  /* Reset & base */
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-  a{color:inherit;text-decoration:none}
-  button{font-family:inherit}
-  img,iframe,video{display:block;max-width:100%}
+    /* Reset & base */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: #fff;
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      font-family: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    img, iframe, video {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
 
-  /* Layout */
-  .stage{min-height:100vh;position:relative;overflow-x:hidden;padding:30px 20px;display:flex;justify-content:center;align-items:flex-start;}
-  .wrap{width:100%;max-width:var(--wrap-max);margin:0 auto;position:relative;z-index:5}
+    /* Layout */
+    .stage {
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .wrap {
+      width: 100%;
+      max-width: var(--wrap-max);
+      margin: 0 auto;
+      position: relative;
+      z-index: 5;
+    }
 
-  /* Background glow */
-  .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;background:
-      radial-gradient(800px 400px at 10% 20%, rgba(124,92,255,0.10), transparent 12%),
-      radial-gradient(700px 350px at 85% 80%, rgba(255,111,97,0.08), transparent 12%),
-      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
-    mix-blend-mode: overlay;filter: blur(30px) saturate(120%);transition:opacity .4s ease;}
+    /* Background glow */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(800px 400px at 10% 20%, rgba(124,92,255,0.10), transparent 12%),
+        radial-gradient(700px 350px at 85% 80%, rgba(255,111,97,0.08), transparent 12%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));
+      mix-blend-mode: overlay;
+      filter: blur(30px) saturate(120%);
+      transition: opacity 0.4s ease;
+    }
 
-  /* Topbar / Nav */
-  header.topbar{position:sticky;top:14px;z-index:60;background:transparent;padding:6px 0;margin-bottom:18px;display:flex;justify-content:center}
-  .nav-wrap{width:100%;max-width:var(--wrap-max);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 12px}
-  .brand{font-weight:800;font-size:1.05rem;letter-spacing:.2px;color:#fff}
-  .nav{display:flex;gap:12px;align-items:center;justify-content:center;backdrop-filter: blur(6px);}
-  .nav .btn{padding:8px 14px;border-radius:10px;font-weight:600;font-size:.95rem;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));color:var(--muted);border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,color .18s;}
-  .nav .btn:hover{transform:translateY(-4px);color:#fff;box-shadow:0 10px 30px rgba(124,92,255,0.08)}
-  .hamburger{display:none;border:0;background:transparent;color:var(--muted);padding:8px;border-radius:8px}
-  .hamburger:focus{outline:2px solid rgba(255,255,255,0.06)}
+    /* Topbar / Nav */
+    header.topbar {
+      position: sticky;
+      top: 16px;
+      z-index: 60;
+      padding: 0;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .nav-wrap {
+      width: 100%;
+      max-width: var(--wrap-max);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 12px;
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.2px;
+      color: #fff;
+    }
+    .nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .nav .btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s;
+    }
+    .nav .btn:hover {
+      transform: translateY(-4px);
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(124,92,255,0.08);
+    }
+    .hamburger {
+      display: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+    }
+    .hamburger:focus {
+      outline: 2px solid rgba(255,255,255,0.06);
+    }
 
-  /* Hero */
-  .hero{display:flex;gap:28px;align-items:center;justify-content:space-between;padding:36px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.03);box-shadow: 0 10px 40px rgba(0,0,0,0.6);position:relative;z-index:10;overflow:hidden;}
-  .hero-left{flex:1;min-width:260px}
-  .hero-right{width:420px;max-width:42%;min-width:260px;display:flex;align-items:center;justify-content:center;position:relative}
+    /* Hero */
+    .hero {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 36px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+    .hero-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .hero-right {
+      flex: 0 0 42%;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-  .title{font-size:clamp(28px, 4.5vw, 48px);line-height:1.02;font-weight:800;margin:0 0 8px;letter-spacing:-0.02em;background:linear-gradient(90deg,var(--accent-2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;transform:translateY(6px);opacity:0;}
-  .subtitle{font-weight:400;color:var(--muted);margin:0 0 18px;opacity:0;transform:translateY(8px)}
-  .cta-row{display:flex;gap:12px;align-items:center;opacity:0;transform:translateY(10px);flex-wrap:wrap}
-  .cta{padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#08101a;font-weight:700;border:none;cursor:pointer;box-shadow:0 12px 30px rgba(124,92,255,0.12);transition:transform .18s}
-  .cta.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
-  .cta:hover{transform:translateY(-4px)}
-  .meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:.95rem;margin-top:14px;opacity:0;transform:translateY(8px);flex-wrap:wrap}
-  .meta .chip{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+    .title {
+      font-size: clamp(1.75rem, 4.5vw, 3rem);
+      line-height: 1.05;
+      font-weight: 800;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      transform: translateY(6px);
+      opacity: 0;
+    }
+    .subtitle {
+      font-weight: 400;
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: clamp(0.9rem, 2.8vw, 1rem);
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(10px);
+      flex-wrap: wrap;
+    }
+    .cta {
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      color: #08101a;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(124,92,255,0.12);
+      transition: transform 0.18s;
+    }
+    .cta.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .cta:hover {
+      transform: translateY(-4px);
+    }
+    .meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 14px;
+      opacity: 0;
+      transform: translateY(8px);
+      flex-wrap: wrap;
+    }
+    .meta .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
 
-  /* Sections */
-  section{margin-top:28px;position:relative;z-index:8}
-  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-  .section-head h2{font-size:1.15rem;color:var(--accent);margin:0;font-weight:800;letter-spacing:.6px}
-  .section-head p{color:var(--muted);margin:0;font-size:.95rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+    /* Sections */
+    section {
+      margin-top: 28px;
+      position: relative;
+      z-index: 8;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .section-head h2 {
+      font-size: 1.15rem;
+      color: var(--accent);
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+    }
+    .section-head p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
 
-  .media-card{background:var(--card-bg);border-radius:14px;padding:12px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.03);transition:transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .35s;will-change:transform;}
-  .media-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(2,6,23,0.6)}
-  .media-card .frame{width:100%;border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9}
-  .media-card iframe, .media-card video{width:100%;height:100%;object-fit:cover;display:block;border:none}
-  .media-card .meta-title{margin-top:10px;font-weight:700}
-  .media-card .meta-sub{color:var(--muted);font-size:.92rem;margin-top:6px}
-  .overlay-title{position:absolute;left:14px;top:12px;padding:7px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.2));border:1px solid rgba(255,255,255,0.04);font-weight:700;color:#fff;font-size:.85rem;backdrop-filter:blur(6px);z-index:2}
+    .media-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.03);
+      transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.35s;
+      will-change: transform;
+    }
+    .media-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(2,6,23,0.6);
+    }
+    .media-card .frame {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+    .media-card iframe,
+    .media-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border: none;
+    }
+    .media-card .meta-title {
+      margin-top: 10px;
+      font-weight: 700;
+    }
+    .media-card .meta-sub {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 6px;
+    }
+    .overlay-title {
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.2));
+      border: 1px solid rgba(255,255,255,0.04);
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.85rem;
+      backdrop-filter: blur(6px);
+      z-index: 2;
+    }
 
-  .card-contact{display:flex;flex-direction:column;gap:8px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .contact a{color:var(--accent);font-weight:700}
-  footer{margin-top:48px;padding:30px 0;text-align:center;color:var(--muted);font-size:.95rem}
+    .card-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .contact a {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    footer {
+      margin-top: 48px;
+      padding: 30px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
 
-  /* Reveal util */
-  .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease, transform .6s cubic-bezier(.2,.9,.2,1)}
-  .reveal.visible{opacity:1;transform:none}
+    /* Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
 
-  /* Cursor light (desktop only) */
-  .cursor-light{position:fixed;pointer-events:none;z-index:9;mix-blend-mode:screen;filter:blur(40px);width:420px;height:420px;border-radius:50%;opacity:.65;background:radial-gradient(circle at center, rgba(124,92,255,0.25), rgba(255,111,97,0.08) 40%, transparent 60%);transition:opacity .2s}
+    /* Cursor light (desktop only) */
+    .cursor-light {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9;
+      mix-blend-mode: screen;
+      filter: blur(40px);
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      opacity: 0.65;
+      background: radial-gradient(circle at center, rgba(124,92,255,0.25), rgba(255,111,97,0.08) 40%, transparent 60%);
+      transition: opacity 0.2s;
+    }
 
-  /* Responsive rules */
-  @media (max-width:1100px){
-    .hero-right{display:none} /* hide preview panel on medium screens to keep focus on content */
-    .hero{padding:22px}
-  }
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .hero-right { display: none; }
+      .hero { padding: 24px; }
+    }
 
-  @media (max-width:880px){
-    .stage{padding:18px 12px}
-    .hero{flex-direction:column;align-items:flex-start;gap:18px;padding:20px}
-    .hero-left{width:100%}
-    .title{font-size:clamp(22px,7.5vw,36px)}
-    .subtitle{font-size:14px}
-    .brand{display:none}
-    .nav{display:none}
-    .hamburger{display:inline-flex}
-    header.topbar{padding:0;margin-bottom:12px}
-    .wrap{padding:0 6px}
-    .bg-layer{filter:blur(24px)}
-    .media-card .frame{aspect-ratio:16/9}
-    .overlay-title{left:10px;top:10px;font-size:.82rem;padding:6px 9px}
-    .cursor-light{display:none} /* turn off cursor light on small devices */
-  }
+    @media (max-width: 880px) {
+      .stage { padding: 18px 12px; }
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px;
+      }
+      .hero-left { width: 100%; }
+      .brand, .nav { display: none; }
+      .hamburger { display: inline-flex; }
+      header.topbar { margin-bottom: 12px; }
+      .bg-layer { filter: blur(24px); }
+      .cursor-light { display: none; }
+      .reveal { transition: none; } /* reduce motion */
+    }
 
-  @media (max-width:480px){
-    .grid{gap:12px}
-    .media-card{padding:10px}
-    .section-head{gap:8px}
-    .meta{font-size:.85rem}
-    .cta{padding:10px 14px;font-size:.95rem}
-    .cta-row{gap:8px}
-  }
+    @media (max-width: 480px) {
+      .grid { gap: 12px; }
+      .media-card { padding: 10px; }
+      .section-head { gap: 8px; }
+      .meta { font-size: 0.85rem; }
+      .cta { padding: 10px 14px; font-size: 0.95rem; }
+      .cta-row { gap: 8px; }
+      .overlay-title {
+        left: 10px;
+        top: 10px;
+        font-size: 0.82rem;
+        padding: 6px 9px;
+      }
+    }
 
-  /* large screens polish */
-  @media (min-width:1200px){
-    .hero{padding:42px}
-  }
+    @media (min-width: 1200px) {
+      .hero { padding: 42px; }
+    }
 
-  /* accessibility focus states */
-  .btn:focus, .cta:focus {outline:2px solid rgba(124,92,255,0.22);outline-offset:2px}
-</style>
+    /* accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    .btn:focus, .cta:focus {
+      outline: 2px solid rgba(124,92,255,0.22);
+      outline-offset: 2px;
+    }
+
+    /* Mobile menu open state */
+    #mobileMenu {
+      display: none;
+      padding: 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.03);
+      margin-top: 8px;
+    }
+    #mobileMenu.active {
+      display: block;
+    }
+    #mobileMenu .btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+    }
+  </style>
 </head>
 <body>
-<div class="bg-layer" id="bgLayer"></div>
-<div class="cursor-light" id="cursorLight" style="left:-9999px;top:-9999px"></div>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="cursor-light" id="cursorLight" style="left: -9999px; top: -9999px"></div>
 
-<div class="stage">
-  <div class="wrap">
-
-    <!-- Top nav -->
-    <header class="topbar" role="banner">
-      <div class="nav-wrap">
-        <div class="brand">Споршев Матвей</div>
-
-        <nav class="nav" role="navigation" aria-label="Главная навигация">
-          <button class="btn" data-scroll="#portfolio">Портфолио</button>
-          <button class="btn" data-scroll="#ai-videos">ИИ-видео</button>
-          <button class="btn" data-scroll="#experience">Опыт</button>
-          <button class="btn" data-scroll="#contact">Контакты</button>
-        </nav>
-
-        <button class="hamburger" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Открыть меню">
-          ☰
-        </button>
-      </div>
-
-      <!-- mobile menu -->
-      <div id="mobileMenu" style="display:none;padding:8px 12px;">
-        <div style="display:flex;flex-direction:column;gap:8px;">
+  <div class="stage">
+    <div class="wrap">
+      <!-- Top nav -->
+      <header class="topbar" role="banner">
+        <div class="nav-wrap">
+          <div class="brand">Споршев Матвей</div>
+          <nav class="nav" role="navigation" aria-label="Главная навигация">
+            <button class="btn" data-scroll="#portfolio">Портфолио</button>
+            <button class="btn" data-scroll="#ai-videos">ИИ-видео</button>
+            <button class="btn" data-scroll="#experience">Опыт</button>
+            <button class="btn" data-scroll="#contact">Контакты</button>
+          </nav>
+          <button class="hamburger" id="navToggle" aria-expanded="false" aria-label="Открыть меню">☰</button>
+        </div>
+        <div id="mobileMenu">
           <button class="btn" data-scroll="#portfolio">Портфолио</button>
           <button class="btn" data-scroll="#ai-videos">ИИ-видео</button>
           <button class="btn" data-scroll="#experience">Опыт</button>
           <button class="btn" data-scroll="#contact">Контакты</button>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- Hero -->
-    <section class="hero" aria-label="Вступление">
-      <div class="hero-left">
-        <h1 class="title reveal" id="mainTitle">Споршев Матвей</h1>
-        <p class="subtitle reveal" id="mainSubtitle">Видеомонтажёр — сочетание классики монтажа и прогрессивных AI-решений</p>
-
-        <div class="meta reveal" id="metaRow">
-          <div class="chip">Нижний Новгород, Россия</div>
-          <div class="chip">tg: @maskitkk</div>
-          <div class="chip">maskitkk@gmail.com</div>
-        </div>
-
-        <div class="cta-row reveal" style="margin-top:18px">
-          <button class="cta" onclick="location.href='mailto:maskitkk@gmail.com'">Написать мне</button>
-          <button class="cta secondary" onclick="document.querySelector('[data-scroll=\'#portfolio\']').click()">Посмотреть работы</button>
-        </div>
-
-        <!-- Обо мне -->
-        <div class="reveal" style="margin-top:24px;color:var(--muted);line-height:1.6">
-          Опытный видеомонтажёр с более чем шестилетним стажем работы в разных форматах — от свадебных и праздничных роликов до короткого контента для соцсетей и интервью. Уверенно совмещаю классический монтаж с современными AI-инструментами, создавая выразительные и динамичные видео. Работаю в международных командах, использую английский язык ежедневно. В последнее время занимаю позицию Quality Control в компании EditValue, отвечаю за финальный просмотр и стандартизацию качества контента.
-        </div>
-
-      </div>
-
-     
-      
-    </section>
-
-    <!-- Portfolio -->
-    <section id="portfolio" class="reveal">
-      <div class="section-head">
-        <h2>Портфолио</h2>
-        <p>Шоурил и примеры работ</p>
-      </div>
-
-      <div class="grid">
-        <div class="media-card" style="grid-column: span 2;">
-          <div class="overlay-title">Showreel</div>
-          <div class="frame">
-            <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel Матвея" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+      <!-- Hero -->
+      <section class="hero" aria-label="Вступление">
+        <div class="hero-left">
+          <h1 class="title reveal" id="mainTitle">Споршев Матвей</h1>
+          <p class="subtitle reveal" id="mainSubtitle">Видеомонтажёр — сочетание классики монтажа и прогрессивных AI-решений</p>
+          <div class="meta reveal" id="metaRow">
+            <div class="chip">Нижний Новгород, Россия</div>
+            <div class="chip">tg: @maskitkk</div>
+            <div class="chip">maskitkk@gmail.com</div>
           </div>
-          <div class="meta-title">Showreel</div>
-          <div class="meta-sub">Короткая презентация работ</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">Свадьба</div>
-          <div class="frame">
-            <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" title="Свадебный хайлайт" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+          <div class="cta-row reveal" style="margin-top:18px">
+            <button class="cta" onclick="location.href='mailto:maskitkk@gmail.com'">Написать мне</button>
+            <button class="cta secondary" onclick="document.querySelector('[data-scroll=\'#portfolio\']').click()">Посмотреть работы</button>
           </div>
-          <div class="meta-title">Свадебный хайлайт</div>
-          <div class="meta-sub">Хайлайты и эмоциональные моменты</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">TV</div>
-          <div class="frame">
-            <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" title="Телепередача" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+          <div class="reveal" style="margin-top:24px;color:var(--muted);line-height:1.6">
+            Опытный видеомонтажёр с более чем шестилетним стажем работы в разных форматах — от свадебных и праздничных роликов до короткого контента для соцсетей и интервью. Уверенно совмещаю классический монтаж с современными AI-инструментами, создавая выразительные и динамичные видео. Работаю в международных командах, использую английский язык ежедневно. В последнее время занимаю позицию Quality Control в компании EditValue, отвечаю за финальный просмотр и стандартизацию качества контента.
           </div>
-          <div class="meta-title">Телепередача</div>
-          <div class="meta-sub">Монтаж для телепроектов</div>
         </div>
+      </section>
 
-        <div class="media-card">
-          <div class="overlay-title">Интервью</div>
-          <div class="frame">
-            <iframe src="https://www.youtube.com/embed/OagICGBqHAg" title="Стрит-интервью" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <!-- Portfolio -->
+      <section id="portfolio" class="reveal">
+        <div class="section-head">
+          <h2>Портфолио</h2>
+          <p>Шоурил и примеры работ</p>
+        </div>
+        <div class="grid">
+          <div class="media-card" style="grid-column: span 2;">
+            <div class="overlay-title">Showreel</div>
+            <div class="frame">
+              <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel Матвея" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+            </div>
+            <div class="meta-title">Showreel</div>
+            <div class="meta-sub">Короткая презентация работ</div>
           </div>
-          <div class="meta-title">Стрит-интервью</div>
-          <div class="meta-sub">Стрит-формат и интервью</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">React</div>
-          <div class="frame">
-            <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" title="Реакт-видео" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <!-- остальные карточки без изменений -->
+          <div class="media-card">
+            <div class="overlay-title">Свадьба</div>
+            <div class="frame">
+              <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" title="Свадебный хайлайт" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+            </div>
+            <div class="meta-title">Свадебный хайлайт</div>
+            <div class="meta-sub">Хайлайты и эмоциональные моменты</div>
           </div>
-          <div class="meta-title">Реакт-видео</div>
-          <div class="meta-sub">Короткие форматы для соцсетей</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">Реклама</div>
-          <div class="frame">
-            <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" title="Реклама" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+          <div class="media-card">
+            <div class="overlay-title">TV</div>
+            <div class="frame">
+              <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" title="Телепередача" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+            </div>
+            <div class="meta-title">Телепередача</div>
+            <div class="meta-sub">Монтаж для телепроектов</div>
           </div>
-          <div class="meta-title">Реклама</div>
-          <div class="meta-sub">Коммерческие ролики</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI videos -->
-    <section id="ai-videos" class="reveal">
-      <div class="section-head">
-        <h2>ИИ-видео</h2>
-        <p>Эксперименты с генеративными инструментами</p>
-      </div>
-
-      <div class="grid">
-        <div class="media-card">
-          <div class="overlay-title">AI</div>
-          <div class="frame" style="aspect-ratio:9/16;min-height:360px">
-            <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
-              <source src="bird.mp4" type="video/mp4">
-            </video>
+          <div class="media-card">
+            <div class="overlay-title">Интервью</div>
+            <div class="frame">
+              <iframe src="https://www.youtube.com/embed/OagICGBqHAg" title="Стрит-интервью" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="meta-title">Стрит-интервью</div>
+            <div class="meta-sub">Стрит-формат и интервью</div>
           </div>
-          <div class="meta-title">AI: bird.mp4</div>
-          <div class="meta-sub">Генеративный эксперимент</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">AI</div>
-          <div class="frame" style="aspect-ratio:9/16;min-height:360px">
-            <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
-              <source src="CAKE_AFTER.mp4" type="video/mp4">
-            </video>
+          <div class="media-card">
+            <div class="overlay-title">React</div>
+            <div class="frame">
+              <iframe src="https://www.youtube.com/embed/BFqSwqecv2k" title="Реакт-видео" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="meta-title">Реакт-видео</div>
+            <div class="meta-sub">Короткие форматы для соцсетей</div>
           </div>
-          <div class="meta-title">AI: CAKE_AFTER.mp4</div>
-          <div class="meta-sub">AI-визуализация</div>
-        </div>
-
-        <div class="media-card">
-          <div class="overlay-title">9x16</div>
-          <div class="frame" style="aspect-ratio:9/16;min-height:360px">
-            <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
-              <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
-            </video>
+          <div class="media-card">
+            <div class="overlay-title">Реклама</div>
+            <div class="frame">
+              <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" title="Реклама" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+            </div>
+            <div class="meta-title">Реклама</div>
+            <div class="meta-sub">Коммерческие ролики</div>
           </div>
-          <div class="meta-title">AI: 9x16 demo</div>
-          <div class="meta-sub">Вертикальные форматы</div>
         </div>
-      </div>
+      </section>
 
-      <div style="text-align:center;margin-top:18px"><a class="btn" href="https://www.instagram.com/synth.pix" target="_blank" rel="noopener">@synth.pix</a></div>
-    </section>
-
-    <!-- Experience & Skills -->
-    <section id="experience" class="reveal">
-      <div class="section-head">
-        <h2>Опыт работы</h2>
-        <p>Ключевые места и обязанности</p>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
-        <div style="color:var(--muted);line-height:1.6">
-          <strong>AI-видео — Видео-монтажёр</strong><br>
-          Октябрь 2024 — настоящее время<br>
-          Создание оригинального контента с использованием генеративных AI-инструментов. Комбинирование традиционного монтажа и нейросетевых подходов для визуальной выразительности. Разработка сценариев и визуальных решений для публикации на медиа-платформах.
-          <div style="height:12px"></div>
-
-          <strong>EditValue — Видео-монтажёр и Quality Control</strong><br>
-          Февраль 2022 — настоящее время<br>
-          Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке. Организация эффективного рабочего процесса и соблюдение сроков.
-          <div style="height:12px"></div>
-
-          <strong>Оптимедиа — Видео-монтажёр</strong><br>
-          Сентябрь 2019 — Декабрь 2023<br>
-          Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами, быстрый выпуск материалов под жёсткие дедлайны. Цветокоррекция, аудиомикс и оптимизация визуального ряда.
+      <!-- AI videos -->
+      <section id="ai-videos" class="reveal">
+        <div class="section-head">
+          <h2>ИИ-видео</h2>
+          <p>Эксперименты с генеративными инструментами</p>
         </div>
-
-        <div class="card-contact" id="contact">
-          <strong>Контакты:</strong>
-          <div class="contact">telegram: @maskitkk</div>
-          <div class="contact">Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a></div>
-          <div class="contact">Город: Нижний Новгород, Россия</div>
-
-          <strong>Навыки:</strong>
-          <div class="contact">Adobe Premiere Pro, DaVinci Resolve, After Effects, Final Cut Pro</div>
-          <div class="contact">Цветокоррекция, обработка звука, Motion Design (базовый)</div>
-          <div class="contact">AI-видео и генеративные инструменты, проектное управление</div>
-
-          <strong>Языки:</strong>
-          <div class="contact">Русский — родной</div>
-          <div class="contact">Английский — B2 (ежедневное использование)</div>
+        <div class="grid">
+          <div class="media-card">
+            <div class="overlay-title">AI</div>
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
+              <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
+                <source src="bird.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="meta-title">AI: bird.mp4</div>
+            <div class="meta-sub">Генеративный эксперимент</div>
+          </div>
+          <div class="media-card">
+            <div class="overlay-title">AI</div>
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
+              <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
+                <source src="CAKE_AFTER.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="meta-title">AI: CAKE_AFTER.mp4</div>
+            <div class="meta-sub">AI-визуализация</div>
+          </div>
+          <div class="media-card">
+            <div class="overlay-title">9x16</div>
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
+              <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
+                <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="meta-title">AI: 9x16 demo</div>
+            <div class="meta-sub">Вертикальные форматы</div>
+          </div>
         </div>
-      </div>
-    </section>
+        <div style="text-align:center;margin-top:18px">
+          <a class="btn" href="https://www.instagram.com/synth.pix" target="_blank" rel="noopener">@synth.pix</a>
+        </div>
+      </section>
 
-    <footer>© 2025 Споршев Матвей — maskitkk@gmail.com</footer>
+      <!-- Experience & Skills -->
+      <section id="experience" class="reveal">
+        <div class="section-head">
+          <h2>Опыт работы</h2>
+          <p>Ключевые места и обязанности</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr;gap:24px;margin-top:16px;">
+          <div style="color:var(--muted);line-height:1.6">
+            <strong>AI-видео — Видео-монтажёр</strong><br>
+            Октябрь 2024 — настоящее время<br>
+            Создание оригинального контента с использованием генеративных AI-инструментов. Комбинирование традиционного монтажа и нейросетевых подходов для визуальной выразительности. Разработка сценариев и визуальных решений для публикации на медиа-платформах.
+            <div style="height:12px"></div>
 
+            <strong>EditValue — Видео-монтажёр и Quality Control</strong><br>
+            Февраль 2022 — настоящее время<br>
+            Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке. Организация эффективного рабочего процесса и соблюдение сроков.
+            <div style="height:12px"></div>
+
+            <strong>Оптимедиа — Видео-монтажёр</strong><br>
+            Сентябрь 2019 — Декабрь 2023<br>
+            Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами, быстрый выпуск материалов под жёсткие дедлайны. Цветокоррекция, аудиомикс и оптимизация визуального ряда.
+          </div>
+          <div class="card-contact" id="contact">
+            <strong>Контакты:</strong>
+            <div class="contact">telegram: @maskitkk</div>
+            <div class="contact">Email: <a href="mailto:maskitkk@gmail.com">maskitkk@gmail.com</a></div>
+            <div class="contact">Город: Нижний Новгород, Россия</div>
+
+            <strong>Навыки:</strong>
+            <div class="contact">Adobe Premiere Pro, DaVinci Resolve, After Effects, Final Cut Pro</div>
+            <div class="contact">Цветокоррекция, обработка звука, Motion Design (базовый)</div>
+            <div class="contact">AI-видео и генеративные инструменты, проектное управление</div>
+
+            <strong>Языки:</strong>
+            <div class="contact">Русский — родной</div>
+            <div class="contact">Английский — B2 (ежедневное использование)</div>
+          </div>
+        </div>
+      </section>
+
+      <footer>© 2025 Споршев Матвей — maskitkk@gmail.com</footer>
+    </div>
   </div>
-</div>
 
-<script>
-  /* smooth scroll for all buttons with data-scroll */
-  document.querySelectorAll('[data-scroll]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      const sel = btn.getAttribute('data-scroll');
-      const target = document.querySelector(sel);
-      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('[data-scroll]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const sel = btn.getAttribute('data-scroll');
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // close mobile menu if open
+          const mobileMenu = document.getElementById('mobileMenu');
+          if (mobileMenu.classList.contains('active')) {
+            mobileMenu.classList.remove('active');
+            document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
+            document.getElementById('navToggle').textContent = '☰';
+          }
+        }
+      });
     });
-  });
 
-  /* Mobile nav toggle */
-  const navToggle = document.getElementById('navToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if(navToggle){
-    navToggle.addEventListener('click', ()=>{
-      const open = navToggle.getAttribute('aria-expanded') === 'true';
-      navToggle.setAttribute('aria-expanded', String(!open));
-      mobileMenu.style.display = open ? 'none' : 'block';
-      navToggle.textContent = open ? '☰' : '✕';
+    // Mobile menu toggle
+    const navToggle = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    navToggle.addEventListener('click', () => {
+      const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', String(!isExpanded));
+      mobileMenu.classList.toggle('active', !isExpanded);
+      navToggle.textContent = isExpanded ? '☰' : '✕';
     });
-  }
 
-  /* Reveal on scroll */
-  const revealElements = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting) entry.target.classList.add('visible');
+    // Close mobile menu on outside click
+    document.addEventListener('click', e => {
+      if (!navToggle.contains(e.target) && !mobileMenu.contains(e.target) && mobileMenu.classList.contains('active')) {
+        mobileMenu.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+        navToggle.textContent = '☰';
+      }
     });
-  },{threshold:0.12});
-  revealElements.forEach(el=>observer.observe(el));
 
-  /* Cursor light: move on mouse for non-touch devices */
-  (function(){
-    const cursorLight = document.getElementById('cursorLight');
-    // Disable cursor effect on touch/coarse pointers
-    const isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-    if(isTouch){ cursorLight.style.display = 'none'; return; }
+    // Reveal on scroll
+    const revealElements = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    revealElements.forEach(el => observer.observe(el));
 
-    document.addEventListener('mousemove', e=>{
-      cursorLight.style.left = (e.clientX - 210) + 'px';
-      cursorLight.style.top = (e.clientY - 210) + 'px';
-      cursorLight.style.opacity = '0.95';
-    });
-    document.addEventListener('mouseleave', ()=>{ cursorLight.style.opacity = '0'; });
-  })();
-
-  /* Improve iframe autoplay on some browsers:
-     allow attribute already added; videos remain with playsinline and muted where needed */
-</script>
+    // Cursor light
+    (function () {
+      const cursorLight = document.getElementById('cursorLight');
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+      if (isTouch || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        cursorLight.style.display = 'none';
+        return;
+      }
+      document.addEventListener('mousemove', e => {
+        cursorLight.style.left = (e.clientX - 210) + 'px';
+        cursorLight.style.top = (e.clientY - 210) + 'px';
+        cursorLight.style.opacity = '0.95';
+      });
+      document.addEventListener('mouseleave', () => {
+        cursorLight.style.opacity = '0';
+      });
+    })();
+  </script>
 </body>
 </html>
