@@ -283,27 +283,14 @@
       aspect-ratio: 16 / 9;
       position: relative;
     }
-    /* 🔧 Исправление для iframe и video */
-    .media-card .frame iframe,
-    .media-card .frame video {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .media-card iframe,
+    .media-card video {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
       border: none;
-      z-index: 1;
-      margin: 0 !important;
-      padding: 0 !important;
     }
-    /* Дополнительные фиксы для YouTube/Vimeo */
-    .media-card .frame iframe[src*="youtube.com"],
-    .media-card .frame iframe[src*="vimeo.com"] {
-      transform: scale(1);
-      transform-origin: top left;
-    }
-
     .media-card .meta-title {
       margin-top: 10px;
       font-weight: 700;
@@ -395,7 +382,7 @@
       header.topbar { margin-bottom: 12px; }
       .bg-layer { filter: blur(24px); }
       .cursor-light { display: none; }
-      .reveal { transition: none; }
+      .reveal { transition: none; } /* reduce motion */
     }
 
     @media (max-width: 480px) {
@@ -411,16 +398,13 @@
         font-size: 0.82rem;
         padding: 6px 9px;
       }
-      .media-card .frame {
-        min-height: 200px;
-      }
     }
 
     @media (min-width: 1200px) {
       .hero { padding: 42px; }
     }
 
-    /* Accessibility */
+    /* accessibility */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -433,7 +417,7 @@
       outline-offset: 2px;
     }
 
-    /* Mobile menu */
+    /* Mobile menu open state */
     #mobileMenu {
       display: none;
       padding: 12px;
@@ -508,15 +492,16 @@
           <div class="media-card" style="grid-column: span 2;">
             <div class="overlay-title">Showreel</div>
             <div class="frame">
-              <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel Матвея" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="https://player.vimeo.com/video/1084552550?h=a4f8136cbe&title=0&byline=0&portrait=0" title="Showreel Матвея" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
             </div>
             <div class="meta-title">Showreel</div>
             <div class="meta-sub">Короткая презентация работ</div>
           </div>
+          <!-- остальные карточки без изменений -->
           <div class="media-card">
             <div class="overlay-title">Свадьба</div>
             <div class="frame">
-              <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" title="Свадебный хайлайт" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="https://player.vimeo.com/video/1084552698?h=8573bfc094" title="Свадебный хайлайт" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
             </div>
             <div class="meta-title">Свадебный хайлайт</div>
             <div class="meta-sub">Хайлайты и эмоциональные моменты</div>
@@ -524,7 +509,7 @@
           <div class="media-card">
             <div class="overlay-title">TV</div>
             <div class="frame">
-              <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" title="Телепередача" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="https://player.vimeo.com/video/1084590660?h=8643071da5" title="Телепередача" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
             </div>
             <div class="meta-title">Телепередача</div>
             <div class="meta-sub">Монтаж для телепроектов</div>
@@ -548,7 +533,7 @@
           <div class="media-card">
             <div class="overlay-title">Реклама</div>
             <div class="frame">
-              <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" title="Реклама" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="https://player.vimeo.com/video/1084559185?h=ef6605e987" title="Реклама" loading="lazy" allow="autoplay; fullscreen; picture-in-picture"></iframe>
             </div>
             <div class="meta-title">Реклама</div>
             <div class="meta-sub">Коммерческие ролики</div>
@@ -565,7 +550,7 @@
         <div class="grid">
           <div class="media-card">
             <div class="overlay-title">AI</div>
-            <div class="frame" style="aspect-ratio:9/16;">
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
               <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
                 <source src="bird.mp4" type="video/mp4">
               </video>
@@ -575,7 +560,7 @@
           </div>
           <div class="media-card">
             <div class="overlay-title">AI</div>
-            <div class="frame" style="aspect-ratio:9/16;">
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
               <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
                 <source src="CAKE_AFTER.mp4" type="video/mp4">
               </video>
@@ -585,7 +570,7 @@
           </div>
           <div class="media-card">
             <div class="overlay-title">9x16</div>
-            <div class="frame" style="aspect-ratio:9/16;">
+            <div class="frame" style="aspect-ratio:9/16; min-height: 200px;">
               <video autoplay muted loop playsinline controlslist="nodownload" preload="metadata">
                 <source src="Professional_Mode_9x16_above_the_river__orange_aerostat_BEST_1.00x_1080x1920_amq-12.mp4" type="video/mp4">
               </video>
@@ -651,6 +636,7 @@
         const target = document.querySelector(sel);
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // close mobile menu if open
           const mobileMenu = document.getElementById('mobileMenu');
           if (mobileMenu.classList.contains('active')) {
             mobileMenu.classList.remove('active');
