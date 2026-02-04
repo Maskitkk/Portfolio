@@ -187,12 +187,7 @@
             opacity: 0; transition: opacity 0.3s;
         }
         .card.loaded iframe { opacity: 1; }
-        .card::after {
-    content: '▶'; position: absolute; z-index: 2;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 3rem; color: white; opacity: 0.8;
-    pointer-events: none; transition: opacity 0.3s;
-}
+  
         .card-bg-1 { background: linear-gradient(135deg, #1e1e1e, #4a4a4a); }
         .card-bg-2 { background: linear-gradient(135deg, #2c3e50, #3498db); }
         .card-bg-3 { background: linear-gradient(135deg, #c0392b, #8e44ad); }
