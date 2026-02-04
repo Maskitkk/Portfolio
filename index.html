@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matvey Sporshev | Video Editor & AI Specialist</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Defer non-critical JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
     <style>
+        /* Critical CSS above-the-fold (hero + nav) */
         :root {
             --bg-color: #fdfdfd;
             --text-main: #111111;
@@ -25,7 +28,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
         body {
             background-color: var(--bg-color);
             font-family: 'Inter', sans-serif;
@@ -35,12 +37,12 @@
         }
 
         #canvas-container {
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
+            z-index: 0; pointer-events: none;
+            opacity: 0; transition: opacity 0.3s;
         }
+        #canvas-container.loaded { opacity: 1; }
 
         #ui-layer { position: relative; z-index: 1; width: 100%; }
 
@@ -48,156 +50,94 @@
             width: 100%; padding: 2rem 4vw;
             display: flex; justify-content: space-between; align-items: center;
             position: fixed; top: 0; z-index: 100;
+            backdrop-filter: blur(10px); background: rgba(255,255,255,0.9);
         }
-
-        .logo { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.2rem; }
-
+        .logo { 
+            font-family: 'Playfair Display', serif; 
+            font-weight: 600; font-size: 1.2rem; 
+        }
         .lang-switch {
             cursor: pointer; font-size: 0.85rem; font-weight: 500;
             padding: 8px 16px; border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 20px; background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
+            border-radius: 20px; background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px); transition: all 0.2s;
         }
+        .lang-switch:hover { background: rgba(255,255,255,1); }
 
         .hero {
             min-height: 60vh;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             text-align: center; padding: 120px 2rem 4rem;
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
-
         .hero::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(to bottom, rgba(253, 253, 253, 0), rgba(253, 253, 253, 1));
-            pointer-events: none;
-            z-index: 2;
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 150px;
+            background: linear-gradient(to bottom, rgba(253,253,253,0), rgba(253,253,253,1));
+            pointer-events: none; z-index: 2;
         }
-
-        /* VIDEO BACKGROUND STYLES */
         .hero-video-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
             transform: translate(-50%, -50%);
-            z-index: -2;
-            object-fit: cover;
-            background-color: var(--bg-color); /* Fallback while loading */
+            z-index: -2; object-fit: cover;
+            background-color: var(--bg-color);
         }
-
-        /* Show loading indicator while video loads on iOS */
-        .hero-video-bg::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(0,0,0,0.1);
-            border-top-color: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            opacity: 0;
-        }
-
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
         .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             z-index: -1;
         }
-
         .hero h1 {
             font-family: 'Playfair Display', serif;
             font-size: clamp(3.5rem, 9vw, 7rem);
             line-height: 1.05; font-weight: 400;
             margin-bottom: 1.5rem; max-width: 1200px;
-            color: var(--text-main);
-            position: relative;
-            z-index: 1;
-            padding: 1.5rem 2rem;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            color: var(--text-main); position: relative; z-index: 1;
+            padding: 1.5rem 2rem; background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px); border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.9);
         }
         .hero h1 span { font-style: italic; }
-
         .subtitle {
             font-size: 1.1rem; line-height: 1.6;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            max-width: 500px; font-weight: 300;
-            position: relative;
-            z-index: 1;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.85);
+            color: var(--text-muted); margin-bottom: 2rem;
+            max-width: 500px; font-weight: 300; position: relative;
+            z-index: 1; padding: 1rem 1.5rem;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px); border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.85);
         }
-
         .skills-container {
             margin-top: 1rem; display: flex; gap: 1rem;
-            flex-wrap: wrap; justify-content: center; max-width: 800px;
-            position: relative;
-            z-index: 1;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.85);
+            flex-wrap: wrap; justify-content: center;
+            max-width: 800px; position: relative; z-index: 1;
+            padding: 1rem; background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(20px); border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.85);
         }
-
         .skill-pill {
-            padding: 7px 18px; 
-            background: rgba(255,255,255,0.7);
-            border: 1px solid rgba(0,0,0,0.08); 
-            border-radius: 30px;
-            font-size: 0.85rem; 
-            color: #444;
+            padding: 7px 18px; background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 30px; font-size: 0.85rem; color: #444;
         }
 
+        /* Below-the-fold styles (non-critical) */
         .content-section {
-            padding: 2rem 4vw 4rem;
-            max-width: 1600px;
-            margin: 0 auto;
+            padding: 2rem 4vw 4rem; max-width: 1600px; margin: 0 auto;
         }
-
         .section-header {
             font-family: 'Playfair Display', serif;
             font-size: 2.8rem; margin-bottom: 1rem; text-align: center;
         }
-
         .sub-header {
             font-family: 'Playfair Display', serif;
             font-size: 1.7rem; margin: 3rem 0 2rem;
             text-align: center; width: 100%;
         }
-
-        /* Experience Dropdown Styles */
         .experience-toggle {
             display: block; margin: 4rem auto 2rem;
             padding: 12px 24px; border: 1px solid rgba(0,0,0,0.1);
@@ -206,81 +146,64 @@
             font-size: 1rem; transition: all 0.3s ease;
         }
         .experience-toggle:hover { background: #f0f0f0; }
-
         .experience-content {
             max-height: 0; overflow: hidden;
             transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 800px; margin: 0 auto;
-            padding: 0 2rem;
+            max-width: 800px; margin: 0 auto; padding: 0 2rem;
         }
         .experience-content.open { max-height: 2000px; margin-bottom: 4rem; }
-
         .exp-item { margin-bottom: 24px; line-height: 1.6; color: var(--text-muted); }
         .exp-item strong { color: var(--text-main); }
-        
-        .recommendation-section { text-align: center; margin-top: 3rem; border-top: 1px solid #eee; padding-top: 3rem; }
-        .recommendation-section h2 { font-family: 'Playfair Display', serif; margin-bottom: 2rem; }
+        .recommendation-section { 
+            text-align: center; margin-top: 3rem; 
+            border-top: 1px solid #eee; padding-top: 3rem; 
+        }
 
         /* Grids */
         .grid-vertical {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 3rem 2rem; margin-bottom: 5rem;
-            align-items: start;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 3rem 2rem; margin-bottom: 5rem; align-items: start;
         }
-
         .grid-horizontal {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-            gap: 3.5rem 2.5rem;
-            align-items: start;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 3.5rem 2.5rem; align-items: start;
         }
 
-        /* Portfolio Item & Card */
-        .portfolio-item {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
+        /* Portfolio Cards - Lazy loaded */
+        .portfolio-item { display: flex; flex-direction: column; width: 100%; }
         .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px; 
-            overflow: hidden;
-            transition: transform 0.4s ease;
-            position: relative; 
-            display: flex;
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            overflow: hidden; transition: transform 0.4s ease;
+            position: relative; display: flex;
             align-items: center; justify-content: center;
-            cursor: pointer;
-            width: 100%;
+            cursor: pointer; width: 100%; height: 0; padding-bottom: 177.78%; /* 9/16 */
+            background-size: cover; background-position: center;
         }
-        .card:hover { transform: translateY(-8px); }
-        .card.vertical { aspect-ratio: 9/16; }
-        .card.horizontal { aspect-ratio: 16/9; }
-
+        .card.horizontal { padding-bottom: 56.25%; } /* 16/9 */
         .card iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
-            z-index: 1;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: none;
+            opacity: 0; transition: opacity 0.3s;
         }
-
+        .card.loaded iframe { opacity: 1; }
+        .card::after {
+    content: '▶'; position: absolute; z-index: 2;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 3rem; color: white; opacity: 0.8;
+    pointer-events: none; transition: opacity 0.3s;
+}
         .card-bg-1 { background: linear-gradient(135deg, #1e1e1e, #4a4a4a); }
         .card-bg-2 { background: linear-gradient(135deg, #2c3e50, #3498db); }
         .card-bg-3 { background: linear-gradient(135deg, #c0392b, #8e44ad); }
         .card-bg-ai { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
-
         .card-title {
-            margin-top: 1rem;
-            font-weight: 500; 
-            font-size: 0.95rem; 
-            color: var(--text-main);
-            text-align: left;
-            padding-left: 5px;
+            margin-top: 1rem; font-weight: 500;
+            font-size: 0.95rem; color: var(--text-main);
+            text-align: left; padding-left: 5px;
         }
+        .card:hover { transform: translateY(-8px); }
+        .card:hover::after { opacity: 0; }
 
         footer { padding: 6rem 2rem; text-align: center; background: white; }
         .contact-link {
@@ -299,9 +222,7 @@
     </style>
 </head>
 <body>
-
     <div id="canvas-container"></div>
-
     <div id="ui-layer">
         <nav>
             <div class="logo" id="site-logo">MATVEY SPORSHEV</div>
@@ -310,19 +231,20 @@
 
         <main>
             <section class="hero">
-                <!-- VIDEO BACKGROUND -->
-                <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+                <video class="hero-video-bg" 
+                       preload="metadata" 
+                       autoplay muted loop playsinline 
+                       poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...[замените на сжатую версию]">
                     <source src="me_optimized.mp4" type="video/mp4">
                 </video>
                 <div class="hero-overlay"></div>
-                
                 <h1 id="hero-title">Classic Editing,<br><span>AI Evolution.</span></h1>
                 <p class="subtitle" id="hero-sub">Professional video editing combining traditional storytelling with generative AI solutions.</p>
                 <div class="skills-container">
                     <div class="skill-pill">Adobe Premiere Pro</div>
                     <div class="skill-pill">Adobe After Effects</div>
-                    <div class="skill-pill">Sound Design</div>   
-                    <div class="skill-pill">Generative AI</div>    
+                    <div class="skill-pill">Sound Design</div>
+                    <div class="skill-pill">Generative AI</div>
                 </div>
             </section>
 
@@ -332,26 +254,26 @@
                 <h3 class="sub-header" id="short-title">Short Form</h3>
                 <div class="grid-vertical">
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-1">
-                            <iframe src="https://player.vimeo.com/video/1161716930" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-1" data-src="https://player.vimeo.com/video/1161716930">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Свадебный тизер" data-en="Wedding Teaser">Wedding Teaser</div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-2">
-                            <iframe src="https://player.vimeo.com/video/1161716650" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-2" data-src="https://player.vimeo.com/video/1161716650">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Разговорный рилс" data-en="Talking Reels">Talking Reels</div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-3">
-                            <iframe src="https://player.vimeo.com/video/1161717079" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-3" data-src="https://player.vimeo.com/video/1161717079">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Реклама для бренда" data-en="Brand Ad">Brand Ad</div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-1">
-                            <iframe src="https://player.vimeo.com/video/1161716604" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-1" data-src="https://player.vimeo.com/video/1161716604">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Развлекательный рилс" data-en="Entertainment Reels">Entertainment Reels</div>
                     </div>
@@ -360,20 +282,20 @@
                 <h3 class="sub-header" id="long-title">Long Form</h3>
                 <div class="grid-horizontal">
                     <div class="portfolio-item">
-                        <div class="card horizontal card-bg-2">
-                            <iframe src="https://player.vimeo.com/video/1161717536" allow="autoplay; fullscreen"></iframe>
+                        <div class="card horizontal card-bg-2" data-src="https://player.vimeo.com/video/1161717536">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Ютуб-формат" data-en="YouTube Format">YouTube Format</div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card horizontal card-bg-3">
-                            <iframe src="https://player.vimeo.com/video/1161717682" allow="autoplay; fullscreen"></iframe>
+                        <div class="card horizontal card-bg-3" data-src="https://player.vimeo.com/video/1161717682">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Вдохновляющее видео" data-en="Inspirational Video">Inspirational Video</div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card horizontal card-bg-1">
-                            <iframe src="https://player.vimeo.com/video/1161718404" allow="autoplay; fullscreen"></iframe>
+                        <div class="card horizontal card-bg-1" data-src="https://player.vimeo.com/video/1161718404">
+                            <iframe loading="lazy"></iframe>
                         </div>
                         <div class="card-title" data-ru="Свадебное видео" data-en="Wedding Video">Wedding Video</div>
                     </div>
@@ -382,44 +304,42 @@
                 <h3 class="sub-header" id="ai-title">AI Experiments</h3>
                 <div class="grid-vertical">
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-ai">
-                            <iframe src="https://player.vimeo.com/video/1161710722" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710722">
+                            <iframe loading="lazy"></iframe>
                         </div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-ai">
-                            <iframe src="https://player.vimeo.com/video/1161710778" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710778">
+                            <iframe loading="lazy"></iframe>
                         </div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-ai">
-                            <iframe src="https://player.vimeo.com/video/1161710676" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710676">
+                            <iframe loading="lazy"></iframe>
                         </div>
                     </div>
                     <div class="portfolio-item">
-                        <div class="card vertical card-bg-ai">
-                            <iframe src="https://player.vimeo.com/video/1161710836" allow="autoplay; fullscreen"></iframe>
+                        <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710836">
+                            <iframe loading="lazy"></iframe>
                         </div>
                     </div>
                 </div>
 
                 <button class="experience-toggle" id="exp-toggle">More about my experience ↓</button>
                 <div class="experience-content" id="exp-content">
-                    <h2 id="exp-header" style="font-family: 'Playfair Display', serif; margin-bottom: 8px;">Work Experience</h2>
-                    <p id="exp-sub" style="margin-bottom: 24px; color: var(--text-muted);">Key roles and responsibilities</p>
+                    <h2 id="exp-header">Work Experience</h2>
+                    <p id="exp-sub">Key roles and responsibilities</p>
                     
                     <div class="exp-item">
                         <strong id="job1-title">EditValue — Quality Control Lead</strong><br>
                         <span id="job1-date">February 2022 — November 2025</span><br>
                         <span id="job1-desc">Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.</span>
                     </div>
-
                     <div class="exp-item">
                         <strong id="job2-title">AI-Video — Video Editor</strong><br>
                         <span id="job2-date">October 2024 — Present</span><br>
                         <span id="job2-desc">Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.</span>
                     </div>
-
                     <div class="exp-item">
                         <strong id="job3-title">Optimedia — Video Editor</strong><br>
                         <span id="job3-date">September 2019 — December 2023</span><br>
@@ -428,7 +348,8 @@
 
                     <div class="recommendation-section">
                         <h2 id="rec-header">Professional Recommendation</h2>
-                        <img src="recommendation_letter.png" alt="Recommendation Letter" style="width: 100%; max-width: 600px; height: auto; border: 1px solid #eee; border-radius: 10px;">
+                        <img src="recommendation_letter.png" alt="Recommendation Letter" 
+                             width="100%" style="max-width: 600px; height: auto; border: 1px solid #eee; border-radius: 10px;" loading="lazy">
                     </div>
                 </div>
             </section>
@@ -443,59 +364,43 @@
     </div>
 
     <script>
+        // Translations (unchanged)
         const translations = {
             en: {
-                logo: 'MATVEY SPORSHEV',
-                heroTitle: 'Classic Editing,<br><span>AI Evolution.</span>',
+                logo: 'MATVEY SPORSHEV', heroTitle: 'Classic Editing,<br><span>AI Evolution.</span>',
                 heroSub: 'Professional video editing combining traditional storytelling with generative AI solutions. Over 6 years of experience creating expressive, dynamic content.',
-                portfolioHeader: 'Featured Work',
-                aiTitle: 'After Effects + Generative AI + Sound Design',
-                shortTitle: 'Vertical',
-                longTitle: 'Horizontal',
-                contactLabel: 'Get in touch',
-                expBtn: 'More about my experience ↓',
-                expBtnClose: 'Show less ↑',
-                expHeader: 'Work Experience',
-                expSub: 'Key roles and responsibilities',
-                job1Title: 'EditValue — Quality Control Lead',
-                job1Date: 'February 2022 — November 2025',
+                portfolioHeader: 'Featured Work', aiTitle: 'After Effects + Generative AI + Sound Design',
+                shortTitle: 'Vertical', longTitle: 'Horizontal', contactLabel: 'Get in touch',
+                expBtn: 'More about my experience ↓', expBtnClose: 'Show less ↑',
+                expHeader: 'Work Experience', expSub: 'Key roles and responsibilities',
+                job1Title: 'EditValue — Quality Control Lead', job1Date: 'February 2022 — November 2025',
                 job1Desc: 'Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.',
-                job2Title: 'AI-Video — Video Editor',
-                job2Date: 'October 2024 — Present',
+                job2Title: 'AI-Video — Video Editor', job2Date: 'October 2024 — Present',
                 job2Desc: 'Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.',
-                job3Title: 'Optimedia — Video Editor',
-                job3Date: 'September 2019 — December 2023',
+                job3Title: 'Optimedia — Video Editor', job3Date: 'September 2019 — December 2023',
                 job3Desc: 'Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.',
                 recHeader: 'Professional Recommendation'
             },
             ru: {
-                logo: 'МАТВЕЙ СПОРШЕВ',
-                heroTitle: 'Классика Монтажа,<br><span>Эволюция AI.</span>',
+                logo: 'МАТВЕЙ СПОРШЕВ', heroTitle: 'Классика Монтажа,<br><span>Эволюция AI.</span>',
                 heroSub: 'Профессиональный видеомонтаж, сочетающий традиции сторителлинга с генеративными AI-решениями. Более 6 лет опыта создания выразительного, динамичного контента.',
-                portfolioHeader: 'Избранные Работы',
-                aiTitle: 'Афтер Эффектс + генеративный ИИ + звуковое оформление',
-                shortTitle: 'Вертикаль',
-                longTitle: 'Горизонталь',
-                contactLabel: 'Связаться',
-                expBtn: 'Подробнее о моём опыте ↓',
-                expBtnClose: 'Свернуть ↑',
-                expHeader: 'Опыт работы',
-                expSub: 'Ключевые места и обязанности',
-                job1Title: 'EditValue — Quality Control Lead',
-                job1Date: 'Февраль 2022 — Ноябрь 2025',
+                portfolioHeader: 'Избранные Работы', aiTitle: 'Афтер Эффектс + генеративный ИИ + звуковое оформление',
+                shortTitle: 'Вертикаль', longTitle: 'Горизонталь', contactLabel: 'Связаться',
+                expBtn: 'Подробнее о моём опыте ↓', expBtnClose: 'Свернуть ↑',
+                expHeader: 'Опыт работы', expSub: 'Ключевые места и обязанности',
+                job1Title: 'EditValue — Quality Control Lead', job1Date: 'Февраль 2022 — Ноябрь 2025',
                 job1Desc: 'Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке.',
-                job2Title: 'AI-видео — Видео-монтажёр',
-                job2Date: 'Октябрь 2024 — настоящее время',
+                job2Title: 'AI-видео — Видео-монтажёр', job2Date: 'Октябрь 2024 — настоящее время',
                 job2Desc: 'Создание оригинального контента с использованием генеративных AI-инструментов. Комбинирование традиционного монтажа и нейросетевых подходов. Разработка сценариев и визуальных решений для публикации на медиа-платформах.',
-                job3Title: 'Оптимедиа — Видео-монтажёр',
-                job3Date: 'Сентябрь 2019 — Декабрь 2023',
+                job3Title: 'Оптимедиа — Видео-монтажёр', job3Date: 'Сентябрь 2019 — Декабрь 2023',
                 job3Desc: 'Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами, быстрый выпуск материалов под жёсткие дедлайны. Цветокоррекция, аудиомикс и оптимизация визуального ряда.',
                 recHeader: 'Профессиональная рекомендация'
             }
         };
 
         let currentLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
-        
+
+        // Language switch
         function updateContent(lang) {
             document.getElementById('site-logo').innerText = translations[lang].logo;
             document.getElementById('hero-title').innerHTML = translations[lang].heroTitle;
@@ -506,7 +411,6 @@
             document.getElementById('long-title').innerText = translations[lang].longTitle;
             document.getElementById('contact-label').innerText = translations[lang].contactLabel;
             
-            // New Experience translations
             const isExpOpen = document.getElementById('exp-content').classList.contains('open');
             document.getElementById('exp-toggle').innerText = isExpOpen ? translations[lang].expBtnClose : translations[lang].expBtn;
             document.getElementById('exp-header').innerText = translations[lang].expHeader;
@@ -526,112 +430,161 @@
                 const text = title.getAttribute(`data-${lang}`);
                 if (text) title.innerText = text;
             });
-
             currentLang = lang;
         }
 
         updateContent(currentLang);
-        document.getElementById('lang-btn').addEventListener('click', () => updateContent(currentLang === 'en' ? 'ru' : 'en'));
+        document.getElementById('lang-btn').onclick = () => updateContent(currentLang === 'en' ? 'ru' : 'en');
 
-        // Toggle Experience logic
-        document.getElementById('exp-toggle').addEventListener('click', function() {
+        // Experience toggle
+        document.getElementById('exp-toggle').onclick = function() {
             const content = document.getElementById('exp-content');
             content.classList.toggle('open');
             this.innerText = content.classList.contains('open') ? translations[currentLang].expBtnClose : translations[currentLang].expBtn;
-            
             if (content.classList.contains('open')) {
-                setTimeout(() => {
-                    content.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300);
+                setTimeout(() => content.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
             }
-        });
+        };
 
-        // --- THREE.JS BACKGROUND ---
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xfdfdfd);
-        const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.z = 10;
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        // Lazy load Vimeo iframes
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    const iframe = card.querySelector('iframe');
+                    const src = card.dataset.src;
+                    if (src && !iframe.src) {
+                        iframe.src = src;
+                        card.classList.add('loaded');
+                        observer.unobserve(card);
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
 
-        const vertexShader = `varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
-        const fragmentShader = `uniform vec3 colorTop; uniform vec3 colorBot; uniform float time; uniform float grainScale; varying vec2 vUv; varying vec3 vNormal; float random(vec2 p) { return fract(cos(dot(p, vec2(23.1406, 2.6651))) * 12345.6789); } void main() { vec3 lightPos = vec3(5.0, 5.0, 10.0); float light = max(dot(vNormal, normalize(lightPos)), 0.0); vec3 finalColor = mix(colorBot, colorTop, vUv.y + 0.2); finalColor *= (0.8 + light * 0.4); float noise = random(gl_FragCoord.xy * grainScale + time); finalColor += (noise - 0.5) * 0.15; gl_FragColor = vec4(pow(finalColor, vec3(1.1)), 1.0); }`;
+        document.querySelectorAll('.card').forEach(card => observer.observe(card));
 
-        function createMat(c1, c2) { return new THREE.ShaderMaterial({ uniforms: { time: { value: 0 }, colorTop: { value: new THREE.Color(c1) }, colorBot: { value: new THREE.Color(c2) }, grainScale: { value: 1.5 } }, vertexShader, fragmentShader }); }
-
-        const sphereLeft = new THREE.Mesh(new THREE.IcosahedronGeometry(2.2, 30), createMat('#1a4040', '#000000'));
-        sphereLeft.position.set(-5.5, 0, 0);
-        scene.add(sphereLeft);
-
-        const sphereRight = new THREE.Mesh(new THREE.SphereGeometry(2.8, 64, 64), createMat('#e05e5e', '#f9a825'));
-        sphereRight.position.set(6, -3.5, 2);
-        scene.add(sphereRight);
-
-        const torusTop = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.4, 16, 100), createMat('#ffffff', '#cceeff'));
-        torusTop.position.set(5, 3.5, -2);
-        scene.add(torusTop);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
-        });
-
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const t = clock.getElapsedTime();
-            [sphereLeft, sphereRight, torusTop].forEach(m => m.material.uniforms.time.value = t * 0.5);
-            sphereLeft.rotation.y += 0.002;
-            sphereRight.rotation.y -= 0.001;
-            torusTop.rotation.z += 0.005;
-
-            sphereLeft.position.x += (-5.5 + mouseX * 2 - sphereLeft.position.x) * 0.05;
-            sphereLeft.position.y += (mouseY * 2 - sphereLeft.position.y) * 0.05;
-
-            sphereRight.position.x += (6 + mouseX * -1.5 - sphereRight.position.x) * 0.05;
-            sphereRight.position.y += (-3.5 + mouseY * -1.5 - sphereRight.position.y) * 0.05;
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        gsap.registerPlugin(ScrollTrigger);
-        gsap.timeline()
-            .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
-            .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
-            .from(".skills-container", { y: 20, opacity: 0, duration: 0.6 }, "-=0.5");
-
-        // iOS Safari video autoplay fix
+        // Video autoplay fix
         const heroVideo = document.querySelector('.hero-video-bg');
         if (heroVideo) {
-            // Force play on load
-            heroVideo.play().catch(err => console.log('Autoplay prevented:', err));
-            
-            // Retry on user interaction
             const playVideo = () => {
-                heroVideo.play().catch(err => console.log('Play failed:', err));
+                heroVideo.play().catch(() => {});
                 document.removeEventListener('touchstart', playVideo);
                 document.removeEventListener('click', playVideo);
             };
-            
             document.addEventListener('touchstart', playVideo, { once: true });
             document.addEventListener('click', playVideo, { once: true });
-            
-            // Force play when page becomes visible
             document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    heroVideo.play().catch(err => console.log('Resume failed:', err));
-                }
+                if (!document.hidden) heroVideo.play().catch(() => {});
             });
         }
+
+        // Optimized Three.js (runs after defer)
+        let scene, camera, renderer, objects = [], clock;
+        function initThreeJS() {
+            if (!THREE) return;
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xfdfdfd);
+            
+            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.z = 10;
+            
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: !isMobile,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            document.getElementById('canvas-container').classList.add('loaded');
+
+            // Optimized shaders (mediump precision)
+            const vertexShader = `varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+            const fragmentShader = `precision mediump float; uniform vec3 colorTop; uniform vec3 colorBot; uniform float time; uniform float grainScale; varying vec2 vUv; varying vec3 vNormal; float random(vec2 p) { return fract(cos(dot(p, vec2(23.1406, 2.6651))) * 12345.6789); } void main() { vec3 lightPos = vec3(5.0, 5.0, 10.0); float light = max(dot(vNormal, normalize(lightPos)), 0.0); vec3 finalColor = mix(colorBot, colorTop, vUv.y + 0.2); finalColor *= (0.8 + light * 0.4); float noise = random(gl_FragCoord.xy * grainScale + time); finalColor += (noise - 0.5) * 0.15; gl_FragColor = vec4(pow(finalColor, vec3(1.1)), 1.0); }`;
+
+            function createMat(c1, c2) {
+                return new THREE.ShaderMaterial({
+                    uniforms: { 
+                        time: { value: 0 }, 
+                        colorTop: { value: new THREE.Color(c1) }, 
+                        colorBot: { value: new THREE.Color(c2) }, 
+                        grainScale: { value: 1.5 } 
+                    },
+                    vertexShader, fragmentShader
+                });
+            }
+
+            // Reduced geometry detail
+            const sphereLeft = new THREE.Mesh(new THREE.IcosahedronGeometry(2.2, 12), createMat('#1a4040', '#000000'));
+            sphereLeft.position.set(-5.5, 0, 0);
+            objects.push(sphereLeft);
+
+            const sphereRight = new THREE.Mesh(new THREE.SphereGeometry(2.8, 32, 32), createMat('#e05e5e', '#f9a825'));
+            sphereRight.position.set(6, -3.5, 2);
+            objects.push(sphereRight);
+
+            const torusTop = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.4, 8, 32), createMat('#ffffff', '#cceeff'));
+            torusTop.position.set(5, 3.5, -2);
+            objects.push(torusTop);
+
+            scene.add(sphereLeft, sphereRight, torusTop);
+            clock = new THREE.Clock();
+
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+                mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const t = clock.getElapsedTime();
+                objects.forEach(m => m.material.uniforms.time.value = t * 0.5);
+                
+                sphereLeft.rotation.y += 0.002;
+                sphereRight.rotation.y -= 0.001;
+                torusTop.rotation.z += 0.005;
+
+                sphereLeft.position.x += (-5.5 + mouseX * 2 - sphereLeft.position.x) * 0.05;
+                sphereLeft.position.y += (mouseY * 2 - sphereLeft.position.y) * 0.05;
+                sphereRight.position.x += (6 + mouseX * -1.5 - sphereRight.position.x) * 0.05;
+                sphereRight.position.y += (-3.5 + mouseY * -1.5 - sphereRight.position.y) * 0.05;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Pause on hidden
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) clock.stop();
+                else clock.start();
+            });
+        }
+
+        // GSAP animations (runs after defer)
+        function initGSAP() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            gsap.registerPlugin(ScrollTrigger);
+            
+            gsap.timeline()
+                .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
+                .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
+                .from(".skills-container", { y: 20, opacity: 0, duration: 0.6 }, "-=0.5");
+        }
+
+        // Initialize when scripts load
+        window.addEventListener('load', () => {
+            initThreeJS();
+            initGSAP();
+        });
     </script>
 </body>
 </html>
