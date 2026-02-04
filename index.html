@@ -92,6 +92,27 @@
             transform: translate(-50%, -50%);
             z-index: -2;
             object-fit: cover;
+            background-color: var(--bg-color); /* Fallback while loading */
+        }
+
+        /* Show loading indicator while video loads on iOS */
+        .hero-video-bg::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top-color: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .hero-overlay {
@@ -290,7 +311,7 @@
         <main>
             <section class="hero">
                 <!-- VIDEO BACKGROUND -->
-                <video class="hero-video-bg" autoplay muted loop playsinline>
+                <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
                     <source src="me_optimized.mp4" type="video/mp4">
                 </video>
                 <div class="hero-overlay"></div>
@@ -587,6 +608,30 @@
             .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
             .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
             .from(".skills-container", { y: 20, opacity: 0, duration: 0.6 }, "-=0.5");
+
+        // iOS Safari video autoplay fix
+        const heroVideo = document.querySelector('.hero-video-bg');
+        if (heroVideo) {
+            // Force play on load
+            heroVideo.play().catch(err => console.log('Autoplay prevented:', err));
+            
+            // Retry on user interaction
+            const playVideo = () => {
+                heroVideo.play().catch(err => console.log('Play failed:', err));
+                document.removeEventListener('touchstart', playVideo);
+                document.removeEventListener('click', playVideo);
+            };
+            
+            document.addEventListener('touchstart', playVideo, { once: true });
+            document.addEventListener('click', playVideo, { once: true });
+            
+            // Force play when page becomes visible
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    heroVideo.play().catch(err => console.log('Resume failed:', err));
+                }
+            });
+        }
     </script>
 </body>
 </html>
