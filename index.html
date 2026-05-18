@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matvey Sporshev | Video Editor & AI Specialist</title>
-    
+
     <!-- Preload critical fonts -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"></noscript>
-    
+
     <!-- Defer non-critical JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
@@ -52,9 +52,9 @@
             position: fixed; top: 0; z-index: 100;
             backdrop-filter: blur(10px); background: rgba(255,255,255,0.9);
         }
-        .logo { 
-            font-family: 'Playfair Display', serif; 
-            font-weight: 600; font-size: 1.2rem; 
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600; font-size: 1.2rem;
         }
         .lang-switch {
             cursor: pointer; font-size: 0.85rem; font-weight: 500;
@@ -146,6 +146,21 @@
             font-size: 1rem; transition: all 0.3s ease;
         }
         .experience-toggle:hover { background: #f0f0f0; }
+        .job-company {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600; font-size: 1.05rem;
+        }
+        .job-pos {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600; color: var(--text-main);
+            font-size: 0.95rem;
+        }
+        .job-date {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400; font-size: 0.85rem;
+            color: var(--text-muted); display: block;
+            margin: 2px 0 6px;
+        }
         .experience-content {
             max-height: 0; overflow: hidden;
             transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -154,9 +169,9 @@
         .experience-content.open { max-height: 2000px; margin-bottom: 4rem; }
         .exp-item { margin-bottom: 24px; line-height: 1.6; color: var(--text-muted); }
         .exp-item strong { color: var(--text-main); }
-        .recommendation-section { 
-            text-align: center; margin-top: 3rem; 
-            border-top: 1px solid #eee; padding-top: 3rem; 
+        .recommendation-section {
+            text-align: center; margin-top: 3rem;
+            border-top: 1px solid #eee; padding-top: 3rem;
         }
 
         /* Grids */
@@ -165,8 +180,9 @@
             gap: 3rem 2rem; margin-bottom: 5rem; align-items: start;
         }
         .grid-horizontal {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-            gap: 3.5rem 2.5rem; align-items: start;
+            display: grid; grid-template-columns: 1fr;
+            gap: 3.5rem 0; align-items: start;
+            max-width: 900px; margin: 0 auto;
         }
 
         /* Portfolio Cards - Lazy loaded */
@@ -187,7 +203,7 @@
             opacity: 0; transition: opacity 0.3s;
         }
         .card.loaded iframe { opacity: 1; }
-  
+
         .card-bg-1 { background: linear-gradient(135deg, #1e1e1e, #4a4a4a); }
         .card-bg-2 { background: linear-gradient(135deg, #2c3e50, #3498db); }
         .card-bg-3 { background: linear-gradient(135deg, #c0392b, #8e44ad); }
@@ -196,6 +212,11 @@
             margin-top: 1rem; font-weight: 500;
             font-size: 0.95rem; color: var(--text-main);
             text-align: left; padding-left: 5px;
+        }
+
+        #short-title + .grid-vertical {
+            grid-template-columns: repeat(3, 1fr);
+            justify-items: center;
         }
         .card:hover { transform: translateY(-8px); }
         .card:hover::after { opacity: 0; }
@@ -210,6 +231,7 @@
 
         @media (max-width: 768px) {
             .grid-vertical { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
+            #short-title + .grid-vertical { grid-template-columns: repeat(2, 1fr); }
             .grid-horizontal { grid-template-columns: 1fr; }
             .section-header { font-size: 2.2rem; }
             .hero { min-height: 50vh; padding-top: 100px; }
@@ -226,9 +248,9 @@
 
         <main>
             <section class="hero">
-                <video class="hero-video-bg" 
-                       preload="metadata" 
-                       autoplay muted loop playsinline 
+                <video class="hero-video-bg"
+                       preload="metadata"
+                       autoplay muted loop playsinline
                        poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...[замените на сжатую версию]">
                     <source src="me_3d_2_optimized.mp4" type="video/mp4">
                 </video>
@@ -248,6 +270,18 @@
 
                 <h3 class="sub-header" id="short-title">Short Form</h3>
                 <div class="grid-vertical">
+                    <div class="portfolio-item">
+                        <div class="card vertical card-bg-2" data-src="https://player.vimeo.com/video/1193244178">
+                            <iframe loading="lazy"></iframe>
+                        </div>
+                        <div class="card-title" data-ru="Недвижимость" data-en="Real Estate">Real Estate</div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1193229299">
+                            <iframe loading="lazy"></iframe>
+                        </div>
+                        <div class="card-title" data-ru="Недвижимость + ИИ" data-en="Real Estate + AI">Real Estate + AI</div>
+                    </div>
                     <div class="portfolio-item">
                         <div class="card vertical card-bg-1" data-src="https://player.vimeo.com/video/1161716930">
                             <iframe loading="lazy"></iframe>
@@ -323,27 +357,38 @@
                 <button class="experience-toggle" id="exp-toggle">More about my experience ↓</button>
                 <div class="experience-content" id="exp-content">
                     <h2 id="exp-header">Work Experience</h2>
+                    <br>
                     <p id="exp-sub">Key roles and responsibilities</p>
-                    
+                    <br>
+
                     <div class="exp-item">
-                        <strong id="job1-title">EditValue — Quality Control Lead</strong><br>
-                        <span id="job1-date">February 2022 — November 2025</span><br>
+                        <strong class="job-company" id="job4-company">Empire City Real Estate</strong><br>
+                        <span class="job-pos" id="job4-pos">Video Editor</span><br>
+                        <span class="job-date" id="job4-date">March 2026 — Present</span><br>
+                        <span id="job4-desc">Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.</span>
+                    </div>
+                    <div class="exp-item">
+                        <strong class="job-company" id="job1-company">EditValue</strong><br>
+                        <span class="job-pos" id="job1-pos">Quality Control Lead</span><br>
+                        <span class="job-date" id="job1-date">February 2022 — November 2025</span><br>
                         <span id="job1-desc">Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.</span>
                     </div>
                     <div class="exp-item">
-                        <strong id="job2-title">AI-Video — Video Editor</strong><br>
-                        <span id="job2-date">October 2024 — Present</span><br>
+                        <strong class="job-company" id="job2-company">AI-Video</strong><br>
+                        <span class="job-pos" id="job2-pos">Video Editor</span><br>
+                        <span class="job-date" id="job2-date">October 2024 — Present</span><br>
                         <span id="job2-desc">Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.</span>
                     </div>
                     <div class="exp-item">
-                        <strong id="job3-title">Optimedia — Video Editor</strong><br>
-                        <span id="job3-date">September 2019 — December 2023</span><br>
+                        <strong class="job-company" id="job3-company">Optimedia</strong><br>
+                        <span class="job-pos" id="job3-pos">Video Editor</span><br>
+                        <span class="job-date" id="job3-date">September 2019 — December 2023</span><br>
                         <span id="job3-desc">Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.</span>
                     </div>
 
                     <div class="recommendation-section">
                         <h2 id="rec-header">Professional Recommendation</h2>
-                        <img src="recommendation_letter.png" alt="Recommendation Letter" 
+                        <img src="recommendation_letter.png" alt="Recommendation Letter"
                              width="100%" style="max-width: 600px; height: auto; border: 1px solid #eee; border-radius: 10px;" loading="lazy">
                     </div>
                 </div>
@@ -368,12 +413,14 @@
                 shortTitle: 'Vertical', longTitle: 'Horizontal', contactLabel: 'Get in touch',
                 expBtn: 'More about my experience ↓', expBtnClose: 'Show less ↑',
                 expHeader: 'Work Experience', expSub: 'Key roles and responsibilities',
-                job1Title: 'EditValue — Quality Control Lead', job1Date: 'February 2022 — November 2025',
+                job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'February 2022 — November 2025',
                 job1Desc: 'Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.',
-                job2Title: 'AI-Video — Video Editor', job2Date: 'October 2024 — Present',
+                job2Company: 'AI-Video', job2Pos: 'Video Editor', job2Date: 'October 2024 — Present',
                 job2Desc: 'Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.',
-                job3Title: 'Optimedia — Video Editor', job3Date: 'September 2019 — December 2023',
+                job3Company: 'Optimedia', job3Pos: 'Video Editor', job3Date: 'September 2019 — December 2023',
                 job3Desc: 'Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.',
+                job4Company: 'Empire City Real Estate', job4Pos: 'Video Editor', job4Date: 'March 2026 — Present',
+                job4Desc: 'Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.',
                 recHeader: 'Professional Recommendation'
             },
             ru: {
@@ -383,12 +430,14 @@
                 shortTitle: 'Вертикаль', longTitle: 'Горизонталь', contactLabel: 'Связаться',
                 expBtn: 'Подробнее о моём опыте ↓', expBtnClose: 'Свернуть ↑',
                 expHeader: 'Опыт работы', expSub: 'Ключевые места и обязанности',
-                job1Title: 'EditValue — Quality Control Lead', job1Date: 'Февраль 2022 — Ноябрь 2025',
+                job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'Февраль 2022 — Ноябрь 2025',
                 job1Desc: 'Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке.',
-                job2Title: 'AI-видео — Видео-монтажёр', job2Date: 'Октябрь 2024 — настоящее время',
+                job2Company: 'AI-видео', job2Pos: 'Видео-монтажёр', job2Date: 'Октябрь 2024 — настоящее время',
                 job2Desc: 'Создание оригинального контента с использованием генеративных AI-инструментов. Комбинирование традиционного монтажа и нейросетевых подходов. Разработка сценариев и визуальных решений для публикации на медиа-платформах.',
-                job3Title: 'Оптимедиа — Видео-монтажёр', job3Date: 'Сентябрь 2019 — Декабрь 2023',
+                job3Company: 'Оптимедиа', job3Pos: 'Видео-монтажёр', job3Date: 'Сентябрь 2019 — Декабрь 2023',
                 job3Desc: 'Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами, быстрый выпуск материалов под жёсткие дедлайны. Цветокоррекция, аудиомикс и оптимизация визуального ряда.',
+                job4Company: 'Empire City Real Estate', job4Pos: 'Видео-монтажёр', job4Date: 'Март 2026 — настоящее время',
+                job4Desc: 'Работа на дубайский филиал международной компании Empire City Real Estate. Видеомонтаж роликов до 1 минуты, вертикальных, на разных языках, цветокоррекция, саунд-дизайн, активное использование ИИ, моушн-дизайн.',
                 recHeader: 'Профессиональная рекомендация'
             }
         };
@@ -405,20 +454,27 @@
             document.getElementById('short-title').innerText = translations[lang].shortTitle;
             document.getElementById('long-title').innerText = translations[lang].longTitle;
             document.getElementById('contact-label').innerText = translations[lang].contactLabel;
-            
+
             const isExpOpen = document.getElementById('exp-content').classList.contains('open');
             document.getElementById('exp-toggle').innerText = isExpOpen ? translations[lang].expBtnClose : translations[lang].expBtn;
             document.getElementById('exp-header').innerText = translations[lang].expHeader;
             document.getElementById('exp-sub').innerText = translations[lang].expSub;
-            document.getElementById('job1-title').innerText = translations[lang].job1Title;
+            document.getElementById('job1-company').innerText = translations[lang].job1Company;
+            document.getElementById('job1-pos').innerText = translations[lang].job1Pos;
             document.getElementById('job1-date').innerText = translations[lang].job1Date;
             document.getElementById('job1-desc').innerText = translations[lang].job1Desc;
-            document.getElementById('job2-title').innerText = translations[lang].job2Title;
+            document.getElementById('job2-company').innerText = translations[lang].job2Company;
+            document.getElementById('job2-pos').innerText = translations[lang].job2Pos;
             document.getElementById('job2-date').innerText = translations[lang].job2Date;
             document.getElementById('job2-desc').innerText = translations[lang].job2Desc;
-            document.getElementById('job3-title').innerText = translations[lang].job3Title;
+            document.getElementById('job3-company').innerText = translations[lang].job3Company;
+            document.getElementById('job3-pos').innerText = translations[lang].job3Pos;
             document.getElementById('job3-date').innerText = translations[lang].job3Date;
             document.getElementById('job3-desc').innerText = translations[lang].job3Desc;
+            document.getElementById('job4-company').innerText = translations[lang].job4Company;
+            document.getElementById('job4-pos').innerText = translations[lang].job4Pos;
+            document.getElementById('job4-date').innerText = translations[lang].job4Date;
+            document.getElementById('job4-desc').innerText = translations[lang].job4Desc;
             document.getElementById('rec-header').innerText = translations[lang].recHeader;
 
             document.querySelectorAll('.card-title').forEach(title => {
@@ -478,15 +534,15 @@
         let scene, camera, renderer, objects = [], clock;
         function initThreeJS() {
             if (!THREE) return;
-            
+
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xfdfdfd);
-            
+
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.z = 10;
-            
+
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            renderer = new THREE.WebGLRenderer({ 
+            renderer = new THREE.WebGLRenderer({
                 antialias: !isMobile,
                 powerPreference: "high-performance"
             });
@@ -501,11 +557,11 @@
 
             function createMat(c1, c2) {
                 return new THREE.ShaderMaterial({
-                    uniforms: { 
-                        time: { value: 0 }, 
-                        colorTop: { value: new THREE.Color(c1) }, 
-                        colorBot: { value: new THREE.Color(c2) }, 
-                        grainScale: { value: 1.5 } 
+                    uniforms: {
+                        time: { value: 0 },
+                        colorTop: { value: new THREE.Color(c1) },
+                        colorBot: { value: new THREE.Color(c2) },
+                        grainScale: { value: 1.5 }
                     },
                     vertexShader, fragmentShader
                 });
@@ -537,7 +593,7 @@
                 requestAnimationFrame(animate);
                 const t = clock.getElapsedTime();
                 objects.forEach(m => m.material.uniforms.time.value = t * 0.5);
-                
+
                 sphereLeft.rotation.y += 0.002;
                 sphereRight.rotation.y -= 0.001;
                 torusTop.rotation.z += 0.005;
@@ -568,7 +624,7 @@
         function initGSAP() {
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
             gsap.registerPlugin(ScrollTrigger);
-            
+
             gsap.timeline()
                 .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
                 .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
