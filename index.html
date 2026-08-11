@@ -63,6 +63,16 @@
             backdrop-filter: blur(4px); transition: all 0.2s;
         }
         .lang-switch:hover { background: rgba(255,255,255,1); }
+        .nav-right {
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .nav-cta {
+            padding: 8px 18px; border-radius: 20px;
+            background: var(--accent); color: white;
+            font-size: 0.85rem; text-decoration: none;
+            transition: all 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.85; }
 
         .hero {
             min-height: 60vh;
@@ -173,6 +183,14 @@
             text-align: center; margin-top: 3rem;
             border-top: 1px solid #eee; padding-top: 3rem;
         }
+        .rec-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            max-width: 600px; margin: 0 auto 2rem;
+            text-align: center; line-height: 1.7;
+            color: var(--text-muted);
+        }
+        .rec-text p { margin-bottom: 1rem; }
 
         /* Grids */
         .grid-vertical {
@@ -243,7 +261,10 @@
     <div id="ui-layer">
         <nav>
             <div class="logo" id="site-logo">MATVEY SPORSHEV</div>
-            <div class="lang-switch" id="lang-btn">EN / RU</div>
+            <div class="nav-right">
+                <a href="#footer" class="nav-cta" id="nav-cta">Contact</a>
+                <div class="lang-switch" id="lang-btn">EN / RU</div>
+            </div>
         </nav>
 
         <main>
@@ -388,6 +409,16 @@
 
                     <div class="recommendation-section">
                         <h2 id="rec-header">Professional Recommendation</h2>
+                        <blockquote class="rec-text">
+                            <p>11.5.2025</p>
+                            <p>To whom it may concern,</p>
+                            <p>It is my pleasure to recommend Matvey Sporshev, who has served as Quality Control Lead at EditValue, our wedding video editing company.</p>
+                            <p>During his time with us, Matvey consistently demonstrated exceptional attention to detail and a strong commitment to maintaining our high standards of excellence. He ensured that every project delivered to our clients met our quality benchmarks both technically and creatively.</p>
+                            <p>His punctuality and reliability made him a cornerstone of our production workflow.</p>
+                            <p>Beyond his professional skills, Matvey is a genuinely pleasant person to work with. His positive attitude, eagerness to learn, and clear growth mindset have made a lasting impression on our entire team. He approaches every challenge with curiosity and professionalism, always looking for ways to improve both himself and the processes around him.</p>
+                            <p>I have no doubt that Matvey will be an asset to any team he joins, and I wholeheartedly recommend him for any position requiring diligence, accountability, and collaboration.</p>
+                            <p>Sincerely,<br>Aminadav Feigenboum<br>Manager, EditValue<br>www.editvalue.net</p>
+                        </blockquote>
                         <img src="recommendation_letter.png" alt="Recommendation Letter"
                              width="100%" style="max-width: 600px; height: auto; border: 1px solid #eee; border-radius: 10px;" loading="lazy">
                     </div>
@@ -395,7 +426,7 @@
             </section>
         </main>
 
-        <footer>
+        <footer id="footer">
             <p style="margin-bottom: 1rem; color: #888; text-transform: uppercase; font-size: 0.75rem;" id="contact-label">Get in touch</p>
             <a href="mailto:maskitkk@gmail.com" class="contact-link">mail: maskitkk@gmail.com</a><br>
             <a href="https://t.me/maskitkk" class="contact-link">tg: @maskitkk</a><br>
@@ -411,6 +442,7 @@
                 heroSub: 'Professional video editing combining traditional storytelling with generative AI solutions. Over 6 years of experience creating expressive, dynamic content.',
                 portfolioHeader: 'Featured Work', aiTitle: 'After Effects + Generative AI + Sound Design',
                 shortTitle: 'Vertical', longTitle: 'Horizontal', contactLabel: 'Get in touch',
+                navCta: 'Contact',
                 expBtn: 'More about my experience ↓', expBtnClose: 'Show less ↑',
                 expHeader: 'Work Experience', expSub: 'Key roles and responsibilities',
                 job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'February 2022 — November 2025',
@@ -428,6 +460,7 @@
                 heroSub: 'Профессиональный видеомонтаж, сочетающий традиции сторителлинга с генеративными AI-решениями. Более 6 лет опыта создания выразительного, динамичного контента.',
                 portfolioHeader: 'Избранные Работы', aiTitle: 'Афтер Эффектс + генеративный ИИ + звуковое оформление',
                 shortTitle: 'Вертикаль', longTitle: 'Горизонталь', contactLabel: 'Связаться',
+                navCta: 'Связаться',
                 expBtn: 'Подробнее о моём опыте ↓', expBtnClose: 'Свернуть ↑',
                 expHeader: 'Опыт работы', expSub: 'Ключевые места и обязанности',
                 job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'Февраль 2022 — Ноябрь 2025',
@@ -454,6 +487,7 @@
             document.getElementById('short-title').innerText = translations[lang].shortTitle;
             document.getElementById('long-title').innerText = translations[lang].longTitle;
             document.getElementById('contact-label').innerText = translations[lang].contactLabel;
+            document.getElementById('nav-cta').innerText = translations[lang].navCta;
 
             const isExpOpen = document.getElementById('exp-content').classList.contains('open');
             document.getElementById('exp-toggle').innerText = isExpOpen ? translations[lang].expBtnClose : translations[lang].expBtn;
