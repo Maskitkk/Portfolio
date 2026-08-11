@@ -83,6 +83,24 @@
         }
         #grain-overlay svg { width: 100%; height: 100%; display: block; }
 
+        .head-tracker {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 64px;
+            aspect-ratio: 645 / 354; /* sprite cell 215x118 — undistorted head, monitor-frame look */
+            background-image: url('head-sprite.png');
+            background-size: 300% 300%;
+            background-position: 50% 50%; /* neutral pose = center cell */
+            background-repeat: no-repeat;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            z-index: 40;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
         .hero {
             position: relative; min-height: 90vh;
             display: flex; flex-direction: column;
@@ -98,11 +116,23 @@
             background-size: 60px 60px;
             pointer-events: none; opacity: 0.5;
         }
-        .hero-bg { position: absolute; inset: 0; z-index: -1; }
-        .hero-bg-img {
-            width: 100%; height: 100%;
-            object-fit: cover; object-position: center 30%;
+        .hero-parallax {
+            position: absolute; inset: 0; z-index: -1;
+            overflow: hidden; pointer-events: none;
+            will-change: transform;
         }
+        .parallax-layer {
+            position: absolute; inset: -5%;
+            width: 110%; height: 110%;
+            will-change: transform;
+            pointer-events: none;
+        }
+        .parallax-layer img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            display: block;
+        }
+        .parallax-layer--mountain img { transform: translateY(37%); }
         .hero-meta {
             font-family: var(--mono-font); font-size: 0.7rem;
             letter-spacing: 0.15em; text-transform: uppercase;
@@ -316,6 +346,16 @@
             .section-header { font-size: 2.2rem; }
             .hero { min-height: 50vh; padding-top: 100px; }
             .dashboard-mock { grid-template-columns: 1fr; gap: 1.75rem; padding: 1.5rem; }
+            .head-tracker { display: none; } /* no cursor on touch devices */
+        }
+
+        @media (min-width: 769px) {
+            /* keep left-aligned content clear of the fixed head-tracker (64px wide + gap) */
+            .content-section { padding-left: calc(4vw + 5.5rem); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-parallax, .parallax-layer { transform: none !important; }
         }
     </style>
 </head>
@@ -337,10 +377,20 @@
 
         <main>
             <section class="hero">
-                <picture class="hero-bg">
-                    <source srcset="hero-bg.webp" type="image/webp">
-                    <img src="hero-bg.png" alt="" class="hero-bg-img" loading="eager" fetchpriority="high">
-                </picture>
+                <div class="hero-parallax" id="hero-parallax" aria-hidden="true">
+                    <picture class="parallax-layer" data-depth="0.1">
+                        <source srcset="skies.webp" type="image/webp">
+                        <img src="skies.png" alt="" loading="eager" fetchpriority="high">
+                    </picture>
+                    <picture class="parallax-layer parallax-layer--mountain" data-depth="0.3">
+                        <source srcset="mountain-layer.webp" type="image/webp">
+                        <img src="mountain-layer.png" alt="" loading="eager">
+                    </picture>
+                    <picture class="parallax-layer" data-depth="0.6">
+                        <source srcset="hill-layer.webp" type="image/webp">
+                        <img src="hill-layer.png" alt="" loading="eager">
+                    </picture>
+                </div>
                 <div class="hero-meta" id="hero-meta">REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS</div>
                 <h1 id="hero-title">Classic Editing,<br><span>AI Evolution.</span></h1>
                 <p class="subtitle" id="hero-sub">Professional video editing combining traditional storytelling with generative AI solutions.</p>
@@ -546,6 +596,8 @@
             <a href="https://t.me/maskitkk" class="contact-link">tg: @maskitkk</a><br>
             <a href="https://www.instagram.com/synth.pix/" class="contact-link">inst: @synth.pix</a>
         </footer>
+
+        <div class="head-tracker" id="head-tracker" aria-hidden="true"></div>
     </div>
 
     <script>
@@ -689,6 +741,103 @@
         }, { threshold: 0.1 });
 
         document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+        // Hero parallax background — smooth lerped mousemove (no throttle/debounce)
+        (function () {
+            const hero = document.querySelector('.hero');
+            const wrap = document.getElementById('hero-parallax');
+            if (!hero || !wrap) return;
+            if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const layers = Array.from(wrap.querySelectorAll('.parallax-layer'));
+            const MAX_SHIFT_PX = 32;
+            const LERP = 0.07;
+            const MAX_ZOOM = 0.03;
+
+            let targetX = 0, targetY = 0, targetScale = 1;
+            let curX = 0, curY = 0, curScale = 1;
+            let raf = null;
+
+            hero.addEventListener('mousemove', (e) => {
+                const r = wrap.getBoundingClientRect();
+                const centerX = r.left + r.width / 2;
+                const centerY = r.top + r.height / 2;
+                targetX = Math.max(-1, Math.min(1, (e.clientX - centerX) / centerX));
+                targetY = Math.max(-1, Math.min(1, (e.clientY - centerY) / centerY));
+                const dist = Math.sqrt(targetX * targetX + targetY * targetY) / Math.SQRT2;
+                targetScale = 1 + dist * MAX_ZOOM;
+                if (raf === null) raf = requestAnimationFrame(tick);
+            });
+
+            function tick() {
+                curX += (targetX - curX) * LERP;
+                curY += (targetY - curY) * LERP;
+                curScale += (targetScale - curScale) * LERP;
+
+                for (const layer of layers) {
+                    const depth = parseFloat(layer.dataset.depth) || 0;
+                    layer.style.transform =
+                        'translate3d(' + (curX * depth * MAX_SHIFT_PX).toFixed(2) + 'px,' +
+                        (curY * depth * MAX_SHIFT_PX * 0.5).toFixed(2) + 'px,0)';
+                }
+                wrap.style.transform = 'scale(' + curScale.toFixed(4) + ')';
+
+                if (Math.abs(targetX - curX) < 0.0005 && Math.abs(targetY - curY) < 0.0005 && Math.abs(targetScale - curScale) < 0.0001) {
+                    curX = targetX; curY = targetY; curScale = targetScale;
+                    raf = null;
+                    return;
+                }
+                raf = requestAnimationFrame(tick);
+            }
+
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach((en) => {
+                    if (!en.isIntersecting && raf !== null) {
+                        cancelAnimationFrame(raf);
+                        raf = null;
+                    }
+                });
+            }, { threshold: 0 });
+            io.observe(hero);
+        })();
+
+        // Head tracker — stop-motion cursor follower (fixed at left edge, all sections)
+        (function () {
+            const el = document.getElementById('head-tracker');
+            if (!el) return;
+            // No hover cursor on small screens; reduced-motion keeps the neutral pose
+            if (window.innerWidth < 769) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            // Set true if (on screenshots) poses look AWAY from the cursor — inverts the columns
+            const FLIP_X = false;
+            const THROTTLE_MS = 180; // discrete "click" cadence, not per-frame
+            const X_POS = ['0%', '50%', '100%'];
+            const Y_POS = ['0%', '50%', '100%'];
+
+            let lastCol = 1, lastRow = 1; // neutral center cell
+            let lastX = 0, lastY = 0;
+            let ticking = false;
+
+            document.addEventListener('mousemove', function (e) {
+                lastX = e.clientX;
+                lastY = e.clientY;
+                if (ticking) return;
+                ticking = true;
+                setTimeout(function () {
+                    ticking = false;
+                    if (window.innerWidth < 769) return;
+                    const vw = window.innerWidth, vh = window.innerHeight;
+                    const fx = lastX / vw, fy = lastY / vh;
+                    let col = fx < 0.33 ? 0 : fx > 0.66 ? 2 : 1;
+                    let row = fy < 0.33 ? 0 : fy > 0.66 ? 2 : 1;
+                    if (FLIP_X) col = 2 - col;
+                    if (col === lastCol && row === lastRow) return;
+                    lastCol = col; lastRow = row;
+                    el.style.backgroundPosition = X_POS[col] + ' ' + Y_POS[row];
+                }, THROTTLE_MS);
+            });
+        })();
 
         // GSAP animations (runs after defer)
         function initGSAP() {
