@@ -8,25 +8,33 @@
     <!-- Preload critical fonts -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 
     <!-- Defer non-critical JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
     <style>
         /* Critical CSS above-the-fold (hero + nav) */
         :root {
-            --bg-color: #fdfdfd;
-            --text-main: #111111;
-            --text-muted: #555555;
-            --accent: #1a1a1a;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.9);
+            --bg-color: #0d0f12;
+            --bg-panel: #16191d;
+            --text-main: #f2f2f0;
+            --text-muted: #8a8f98;
+            --accent: #e8703a;
+            --accent-teal: #2dd4bf;
+            --glass-bg: rgba(22, 25, 29, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --grid-line: rgba(255, 255, 255, 0.06);
+            --mono-font: 'JetBrains Mono', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        a:focus-visible, button:focus-visible, .lang-switch:focus-visible, .experience-toggle:focus-visible {
+            outline: 2px solid var(--accent-teal);
+            outline-offset: 2px;
+        }
         html { scroll-behavior: smooth; }
         body {
             background-color: var(--bg-color);
@@ -36,33 +44,28 @@
             width: 100vw;
         }
 
-        #canvas-container {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        #canvas-container.loaded { opacity: 1; }
-
         #ui-layer { position: relative; z-index: 1; width: 100%; }
 
         nav {
             width: 100%; padding: 2rem 4vw;
             display: flex; justify-content: space-between; align-items: center;
             position: fixed; top: 0; z-index: 100;
-            backdrop-filter: blur(10px); background: rgba(255,255,255,0.9);
+            background: rgba(13,15,18,0.7);
+            backdrop-filter: blur(12px);
         }
         .logo {
             font-family: 'Playfair Display', serif;
             font-weight: 600; font-size: 1.2rem;
+            font-style: italic; text-transform: none;
         }
         .lang-switch {
             cursor: pointer; font-size: 0.85rem; font-weight: 500;
-            padding: 8px 16px; border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 20px; background: rgba(255,255,255,0.8);
+            padding: 8px 16px; border: 1px solid var(--glass-border);
+            border-radius: 20px; background: rgba(255,255,255,0.06);
+            color: var(--text-main);
             backdrop-filter: blur(4px); transition: all 0.2s;
         }
-        .lang-switch:hover { background: rgba(255,255,255,1); }
+        .lang-switch:hover { background: rgba(255,255,255,0.12); }
         .nav-right {
             display: flex; align-items: center; gap: 0.75rem;
         }
@@ -74,32 +77,38 @@
         }
         .nav-cta:hover { opacity: 0.85; }
 
+        #grain-overlay {
+            position: fixed; inset: 0; z-index: 50; pointer-events: none;
+            opacity: 0.06; mix-blend-mode: overlay;
+        }
+        #grain-overlay svg { width: 100%; height: 100%; display: block; }
+
         .hero {
-            min-height: 60vh;
+            position: relative; min-height: 90vh;
             display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            text-align: center; padding: 120px 2rem 4rem;
-            position: relative; overflow: hidden;
+            justify-content: flex-start; align-items: center;
+            text-align: center; padding: 140px 2rem 4rem;
+            overflow: hidden; z-index: 60;
         }
-        .hero::after {
-            content: ''; position: absolute; bottom: 0; left: 0;
-            width: 100%; height: 150px;
-            background: linear-gradient(to bottom, rgba(253,253,253,0), rgba(253,253,253,1));
-            pointer-events: none; z-index: 2;
+        .hero::before {
+            content: ''; position: absolute; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none; opacity: 0.5;
         }
-        .hero-video-bg {
-            position: absolute; top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translate(-50%, -50%);
-            z-index: -2; object-fit: cover;
-            background-color: var(--bg-color);
-        }
-        .hero-overlay {
-            position: absolute; top: 0; left: 0;
+        .hero-bg { position: absolute; inset: 0; z-index: -1; }
+        .hero-bg-img {
             width: 100%; height: 100%;
-            backdrop-filter: blur(6px);
-            z-index: -1;
+            object-fit: cover; object-position: center 30%;
+        }
+        .hero-meta {
+            font-family: var(--mono-font); font-size: 0.7rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(242,242,240,0.85); margin-bottom: 1rem;
+            opacity: 1; position: relative; z-index: 1;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
         }
         .hero h1 {
             font-family: 'Playfair Display', serif;
@@ -107,32 +116,34 @@
             line-height: 1.05; font-weight: 400;
             margin-bottom: 1.5rem; max-width: 1200px;
             color: var(--text-main); position: relative; z-index: 1;
-            padding: 1.5rem 2rem; background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(3px); border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.9);
+            background: none; backdrop-filter: none; border: none;
+            text-shadow: 0 2px 16px rgba(0,0,0,0.5);
         }
-        .hero h1 span { font-style: italic; }
+        .hero h1 span { color: var(--accent); font-style: normal; }
         .subtitle {
             font-size: 1.1rem; line-height: 1.6;
-            color: var(--text-muted); margin-bottom: 2rem;
-            max-width: 500px; font-weight: 300; position: relative;
-            z-index: 1; padding: 1rem 1.5rem;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(3px); border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.85);
+            color: rgba(242,242,240,0.97); margin-bottom: 2rem;
+            max-width: 500px; font-weight: 400; position: relative;
+            z-index: 1;
+            background: rgba(13,15,18,0.55);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.9rem 1.6rem;
+            backdrop-filter: blur(6px);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
         }
         .skills-container {
             margin-top: 1rem; display: flex; gap: 1rem;
             flex-wrap: wrap; justify-content: center;
             max-width: 800px; position: relative; z-index: 1;
-            padding: 1rem; background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(3px); border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.85);
+            background: none; backdrop-filter: none; border: none;
+            text-shadow: 0 2px 16px rgba(0,0,0,0.5);
         }
         .skill-pill {
-            padding: 7px 18px; background: rgba(255,255,255,0.9);
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 30px; font-size: 0.85rem; color: #444;
+            padding: 7px 18px; background: rgba(22,25,29,0.55);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px; font-size: 0.85rem; color: var(--text-main);
+            font-family: var(--mono-font); letter-spacing: 0.04em;
         }
 
         /* Below-the-fold styles (non-critical) */
@@ -150,12 +161,13 @@
         }
         .experience-toggle {
             display: block; margin: 4rem auto 2rem;
-            padding: 12px 24px; border: 1px solid rgba(0,0,0,0.1);
-            background: white; border-radius: 30px;
+            padding: 12px 24px; border: 1px solid var(--glass-border);
+            background: var(--glass-bg); color: var(--text-main);
+            border-radius: 30px;
             font-family: 'Inter', sans-serif; cursor: pointer;
             font-size: 1rem; transition: all 0.3s ease;
         }
-        .experience-toggle:hover { background: #f0f0f0; }
+        .experience-toggle:hover { background: rgba(255,255,255,0.08); }
         .job-company {
             font-family: 'Playfair Display', serif;
             font-weight: 600; font-size: 1.05rem;
@@ -166,7 +178,7 @@
             font-size: 0.95rem;
         }
         .job-date {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--mono-font);
             font-weight: 400; font-size: 0.85rem;
             color: var(--text-muted); display: block;
             margin: 2px 0 6px;
@@ -181,16 +193,8 @@
         .exp-item strong { color: var(--text-main); }
         .recommendation-section {
             text-align: center; margin-top: 3rem;
-            border-top: 1px solid #eee; padding-top: 3rem;
+            border-top: 1px solid var(--glass-border); padding-top: 3rem;
         }
-        .rec-text {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            max-width: 600px; margin: 0 auto 2rem;
-            text-align: center; line-height: 1.7;
-            color: var(--text-muted);
-        }
-        .rec-text p { margin-bottom: 1rem; }
 
         /* Grids */
         .grid-vertical {
@@ -204,7 +208,17 @@
         }
 
         /* Portfolio Cards - Lazy loaded */
-        .portfolio-item { display: flex; flex-direction: column; width: 100%; }
+        .portfolio-item {
+            display: flex; flex-direction: column; width: 100%;
+            border-top: 1px solid var(--grid-line);
+            padding-top: 1.25rem;
+        }
+        .portfolio-item:first-child { border-top: none; }
+        .card-filename {
+            font-family: var(--mono-font); font-size: 0.7rem;
+            color: var(--text-muted); margin-bottom: 6px;
+            display: flex; justify-content: space-between;
+        }
         .card {
     background: var(--glass-bg); backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); border-radius: 20px;
@@ -222,10 +236,26 @@
         }
         .card.loaded iframe { opacity: 1; }
 
-        .card-bg-1 { background: linear-gradient(135deg, #1e1e1e, #4a4a4a); }
-        .card-bg-2 { background: linear-gradient(135deg, #2c3e50, #3498db); }
-        .card-bg-3 { background: linear-gradient(135deg, #c0392b, #8e44ad); }
-        .card-bg-ai { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+        .card-bg-1, .card-bg-2, .card-bg-3, .card-bg-ai {
+            background: linear-gradient(135deg, #16191d, #1f2329);
+        }
+        .card-bg-1::after, .card-bg-3::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(45,212,191,0.08), transparent);
+            pointer-events: none;
+        }
+        .card-bg-2::after, .card-bg-ai::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(232,112,58,0.08), transparent);
+            pointer-events: none;
+        }
+        .card-timecode {
+            position: absolute; bottom: 8px; right: 8px;
+            font-family: var(--mono-font); font-size: 0.65rem;
+            color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.5);
+            padding: 2px 6px; border-radius: 3px; z-index: 2;
+            pointer-events: none;
+        }
         .card-title {
             margin-top: 1rem; font-weight: 500;
             font-size: 0.95rem; color: var(--text-main);
@@ -236,15 +266,47 @@
             grid-template-columns: repeat(3, 1fr);
             justify-items: center;
         }
-        .card:hover { transform: translateY(-8px); }
-        .card:hover::after { opacity: 0; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(232,112,58,0.15); }
 
-        footer { padding: 6rem 2rem; text-align: center; background: white; }
+        footer { padding: 6rem 2rem; text-align: center; background: var(--bg-color); }
+        .local-time {
+            font-family: var(--mono-font); font-size: 0.75rem;
+            color: var(--text-muted); margin-bottom: 1.5rem;
+        }
         .contact-link {
             font-family: 'Playfair Display', serif; font-size: 1.8rem;
             color: var(--text-main); text-decoration: none;
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid var(--glass-border);
             display: inline-block; margin-bottom: 0.5rem;
+        }
+
+        /* ReelScout dashboard mock */
+        .reelscout-sub {
+            text-align: center; max-width: 560px; margin: 0 auto;
+            color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;
+        }
+        .dashboard-mock {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+            background: var(--bg-panel); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 2rem; margin: 2rem auto;
+            max-width: 1000px;
+        }
+        .pipeline-card {
+            display: flex; flex-direction: column; gap: 8px;
+            font-family: var(--mono-font);
+        }
+        .pipeline-icon { color: var(--accent-teal); font-size: 0.7rem; }
+        .pipeline-label { font-size: 0.8rem; letter-spacing: 0.05em; color: var(--text-main); }
+        .pipeline-tool { font-size: 0.7rem; color: var(--text-muted); }
+        .pipeline-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+        .pipeline-fill { height: 100%; background: var(--accent-teal); }
+        .pipeline-status { font-size: 0.7rem; color: var(--accent); }
+        .reelscout-hardware {
+            grid-column: 1 / -1; margin-top: 0.5rem; padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            font-family: var(--mono-font); font-size: 0.65rem;
+            color: var(--text-muted); text-align: center; opacity: 0.6;
+            letter-spacing: 0.05em;
         }
 
         @media (max-width: 768px) {
@@ -253,12 +315,18 @@
             .grid-horizontal { grid-template-columns: 1fr; }
             .section-header { font-size: 2.2rem; }
             .hero { min-height: 50vh; padding-top: 100px; }
+            .dashboard-mock { grid-template-columns: 1fr; gap: 1.75rem; padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <div id="canvas-container"></div>
     <div id="ui-layer">
+        <div id="grain-overlay" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <filter id="grain-noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter>
+                <rect width="100%" height="100%" filter="url(#grain-noise)"/>
+            </svg>
+        </div>
         <nav>
             <div class="logo" id="site-logo">MATVEY SPORSHEV</div>
             <div class="nav-right">
@@ -269,13 +337,11 @@
 
         <main>
             <section class="hero">
-                <video class="hero-video-bg"
-                       preload="metadata"
-                       autoplay muted loop playsinline
-                       poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...[замените на сжатую версию]">
-                    <source src="me_3d_2_optimized.mp4" type="video/mp4">
-                </video>
-                <div class="hero-overlay"></div>
+                <picture class="hero-bg">
+                    <source srcset="hero-bg.webp" type="image/webp">
+                    <img src="hero-bg.png" alt="" class="hero-bg-img" loading="eager" fetchpriority="high">
+                </picture>
+                <div class="hero-meta" id="hero-meta">REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS</div>
                 <h1 id="hero-title">Classic Editing,<br><span>AI Evolution.</span></h1>
                 <p class="subtitle" id="hero-sub">Professional video editing combining traditional storytelling with generative AI solutions.</p>
                 <div class="skills-container">
@@ -292,38 +358,50 @@
                 <h3 class="sub-header" id="short-title">Short Form</h3>
                 <div class="grid-vertical">
                     <div class="portfolio-item">
+                        <div class="card-filename">RE_dubai_v03_final.mp4</div>
                         <div class="card vertical card-bg-2" data-src="https://player.vimeo.com/video/1193244178">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:47</span>
                         </div>
                         <div class="card-title" data-ru="Недвижимость" data-en="Real Estate">Real Estate</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">RE_ai_tour_v01_final.mp4</div>
                         <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1193229299">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:38</span>
                         </div>
                         <div class="card-title" data-ru="Недвижимость + ИИ" data-en="Real Estate + AI">Real Estate + AI</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">WD_teaser_v02_final.mp4</div>
                         <div class="card vertical card-bg-1" data-src="https://player.vimeo.com/video/1161716930">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:59</span>
                         </div>
                         <div class="card-title" data-ru="Свадебный тизер" data-en="Wedding Teaser">Wedding Teaser</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">TR_interview_v01_final.mp4</div>
                         <div class="card vertical card-bg-2" data-src="https://player.vimeo.com/video/1161716650">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:52</span>
                         </div>
                         <div class="card-title" data-ru="Разговорный рилс" data-en="Talking Reels">Talking Reels</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">BR_launch_v04_final.mp4</div>
                         <div class="card vertical card-bg-3" data-src="https://player.vimeo.com/video/1161717079">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:31</span>
                         </div>
                         <div class="card-title" data-ru="Реклама для бренда" data-en="Brand Ad">Brand Ad</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">ER_challenge_v02_final.mp4</div>
                         <div class="card vertical card-bg-1" data-src="https://player.vimeo.com/video/1161716604">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:01:24</span>
                         </div>
                         <div class="card-title" data-ru="Развлекательный рилс" data-en="Entertainment Reels">Entertainment Reels</div>
                     </div>
@@ -332,20 +410,26 @@
                 <h3 class="sub-header" id="long-title">Long Form</h3>
                 <div class="grid-horizontal">
                     <div class="portfolio-item">
+                        <div class="card-filename">YT_documentary_v05_final.mp4</div>
                         <div class="card horizontal card-bg-2" data-src="https://player.vimeo.com/video/1161717536">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:03:48</span>
                         </div>
                         <div class="card-title" data-ru="Ютуб-формат" data-en="YouTube Format">YouTube Format</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">INS_motivation_v02_final.mp4</div>
                         <div class="card horizontal card-bg-3" data-src="https://player.vimeo.com/video/1161717682">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:02:56</span>
                         </div>
                         <div class="card-title" data-ru="Вдохновляющее видео" data-en="Inspirational Video">Inspirational Video</div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">WD_ceremony_v03_final.mp4</div>
                         <div class="card horizontal card-bg-1" data-src="https://player.vimeo.com/video/1161718404">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:03:35</span>
                         </div>
                         <div class="card-title" data-ru="Свадебное видео" data-en="Wedding Video">Wedding Video</div>
                     </div>
@@ -354,26 +438,66 @@
                 <h3 class="sub-header" id="ai-title">AI Experiments</h3>
                 <div class="grid-vertical">
                     <div class="portfolio-item">
+                        <div class="card-filename">AI_motion_study_v01_final.mp4</div>
                         <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710722">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:26</span>
                         </div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">AI_relight_v02_final.mp4</div>
                         <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710778">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:19</span>
                         </div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">AI_filmlook_v01_final.mp4</div>
                         <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710676">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:33</span>
                         </div>
                     </div>
                     <div class="portfolio-item">
+                        <div class="card-filename">AI_broll_v03_final.mp4</div>
                         <div class="card vertical card-bg-ai" data-src="https://player.vimeo.com/video/1161710836">
                             <iframe loading="lazy"></iframe>
+                            <span class="card-timecode">00:00:41</span>
                         </div>
                     </div>
                 </div>
+
+                <section class="content-section" id="reelscout">
+                    <h2 class="section-header" id="reelscout-header">Built: ReelScout</h2>
+                    <p class="reelscout-sub" id="reelscout-sub">
+                        Local AI tool for automated footage review — scene detection,
+                        transcription, and content description, running entirely on-device.
+                    </p>
+                    <div class="dashboard-mock">
+                        <div class="pipeline-card">
+                            <span class="pipeline-icon">●</span>
+                            <span class="pipeline-label">SCENE DETECTION</span>
+                            <span class="pipeline-tool">PySceneDetect</span>
+                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
+                            <span class="pipeline-status">247 scenes found</span>
+                        </div>
+                        <div class="pipeline-card">
+                            <span class="pipeline-icon">●</span>
+                            <span class="pipeline-label">TRANSCRIPTION</span>
+                            <span class="pipeline-tool">faster-whisper large-v3</span>
+                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
+                            <span class="pipeline-status">12 languages detected</span>
+                        </div>
+                        <div class="pipeline-card">
+                            <span class="pipeline-icon">●</span>
+                            <span class="pipeline-label">SCENE DESCRIPTION</span>
+                            <span class="pipeline-tool">Qwen2.5-VL-7B</span>
+                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
+                            <span class="pipeline-status">auto-tagged</span>
+                        </div>
+                        <div class="reelscout-hardware">RTX 5060 Ti · LOCAL INFERENCE · NO CLOUD</div>
+                    </div>
+                </section>
 
                 <button class="experience-toggle" id="exp-toggle">More about my experience ↓</button>
                 <div class="experience-content" id="exp-content">
@@ -408,26 +532,16 @@
                     </div>
 
                     <div class="recommendation-section">
-                        <h2 id="rec-header">Professional Recommendation</h2>
-                        <blockquote class="rec-text">
-                            <p>11.5.2025</p>
-                            <p>To whom it may concern,</p>
-                            <p>It is my pleasure to recommend Matvey Sporshev, who has served as Quality Control Lead at EditValue, our wedding video editing company.</p>
-                            <p>During his time with us, Matvey consistently demonstrated exceptional attention to detail and a strong commitment to maintaining our high standards of excellence. He ensured that every project delivered to our clients met our quality benchmarks both technically and creatively.</p>
-                            <p>His punctuality and reliability made him a cornerstone of our production workflow.</p>
-                            <p>Beyond his professional skills, Matvey is a genuinely pleasant person to work with. His positive attitude, eagerness to learn, and clear growth mindset have made a lasting impression on our entire team. He approaches every challenge with curiosity and professionalism, always looking for ways to improve both himself and the processes around him.</p>
-                            <p>I have no doubt that Matvey will be an asset to any team he joins, and I wholeheartedly recommend him for any position requiring diligence, accountability, and collaboration.</p>
-                            <p>Sincerely,<br>Aminadav Feigenboum<br>Manager, EditValue<br>www.editvalue.net</p>
-                        </blockquote>
                         <img src="recommendation_letter.png" alt="Recommendation Letter"
-                             width="100%" style="max-width: 600px; height: auto; border: 1px solid #eee; border-radius: 10px;" loading="lazy">
+                             width="100%" style="max-width: 760px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--glass-border); border-radius: 10px;" loading="lazy">
                     </div>
                 </div>
             </section>
         </main>
 
         <footer id="footer">
-            <p style="margin-bottom: 1rem; color: #888; text-transform: uppercase; font-size: 0.75rem;" id="contact-label">Get in touch</p>
+            <p class="local-time" id="local-time"></p>
+            <p style="margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-family: var(--mono-font); letter-spacing: 0.15em;" id="contact-label">Get in touch</p>
             <a href="mailto:maskitkk@gmail.com" class="contact-link">mail: maskitkk@gmail.com</a><br>
             <a href="https://t.me/maskitkk" class="contact-link">tg: @maskitkk</a><br>
             <a href="https://www.instagram.com/synth.pix/" class="contact-link">inst: @synth.pix</a>
@@ -439,8 +553,11 @@
         const translations = {
             en: {
                 logo: 'MATVEY SPORSHEV', heroTitle: 'Classic editing,<br><span>AI evolution.</span>',
+                heroMeta: 'REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS',
                 heroSub: 'Professional video editing combining traditional storytelling with generative AI solutions. Over 6 years of experience creating expressive, dynamic content.',
                 portfolioHeader: 'Featured Work', aiTitle: 'After Effects + Generative AI + Sound Design',
+                reelscoutHeader: 'Built: ReelScout',
+                reelscoutSub: 'Local AI tool for automated footage review — scene detection, transcription, and content description, running entirely on-device.',
                 shortTitle: 'Vertical', longTitle: 'Horizontal', contactLabel: 'Get in touch',
                 navCta: 'Contact',
                 expBtn: 'More about my experience ↓', expBtnClose: 'Show less ↑',
@@ -452,13 +569,15 @@
                 job3Company: 'Optimedia', job3Pos: 'Video Editor', job3Date: 'September 2019 — December 2023',
                 job3Desc: 'Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.',
                 job4Company: 'Empire City Real Estate', job4Pos: 'Video Editor', job4Date: 'March 2026 — Present',
-                job4Desc: 'Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.',
-                recHeader: 'Professional Recommendation'
+                job4Desc: 'Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.'
             },
             ru: {
                 logo: 'МАТВЕЙ СПОРШЕВ', heroTitle: 'Классика монтажа,<br><span>эволюция ИИ.</span>',
+                heroMeta: 'REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS',
                 heroSub: 'Профессиональный видеомонтаж, сочетающий традиции сторителлинга с генеративными AI-решениями. Более 6 лет опыта создания выразительного, динамичного контента.',
                 portfolioHeader: 'Избранные Работы', aiTitle: 'Афтер Эффектс + генеративный ИИ + звуковое оформление',
+                reelscoutHeader: 'Разработал: ReelScout',
+                reelscoutSub: 'Локальный AI-инструмент для автоматического разбора отснятого материала — определение сцен, транскрипция и описание контента. Всё работает локально, на устройстве.',
                 shortTitle: 'Вертикаль', longTitle: 'Горизонталь', contactLabel: 'Связаться',
                 navCta: 'Связаться',
                 expBtn: 'Подробнее о моём опыте ↓', expBtnClose: 'Свернуть ↑',
@@ -470,20 +589,23 @@
                 job3Company: 'Оптимедиа', job3Pos: 'Видео-монтажёр', job3Date: 'Сентябрь 2019 — Декабрь 2023',
                 job3Desc: 'Монтаж новостных сюжетов и видео для цифровых платформ. Работа с редакторами и журналистами, быстрый выпуск материалов под жёсткие дедлайны. Цветокоррекция, аудиомикс и оптимизация визуального ряда.',
                 job4Company: 'Empire City Real Estate', job4Pos: 'Видео-монтажёр', job4Date: 'Март 2026 — настоящее время',
-                job4Desc: 'Работа на дубайский филиал международной компании Empire City Real Estate. Видеомонтаж роликов до 1 минуты, вертикальных, на разных языках, цветокоррекция, саунд-дизайн, активное использование ИИ, моушн-дизайн.',
-                recHeader: 'Профессиональная рекомендация'
+                job4Desc: 'Работа на дубайский филиал международной компании Empire City Real Estate. Видеомонтаж роликов до 1 минуты, вертикальных, на разных языках, цветокоррекция, саунд-дизайн, активное использование ИИ, моушн-дизайн.'
             }
         };
 
         let currentLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         // Language switch
         function updateContent(lang) {
             document.getElementById('site-logo').innerText = translations[lang].logo;
             document.getElementById('hero-title').innerHTML = translations[lang].heroTitle;
+            document.getElementById('hero-meta').innerText = translations[lang].heroMeta;
             document.getElementById('hero-sub').innerText = translations[lang].heroSub;
             document.getElementById('portfolio-header').innerText = translations[lang].portfolioHeader;
             document.getElementById('ai-title').innerText = translations[lang].aiTitle;
+            document.getElementById('reelscout-header').innerText = translations[lang].reelscoutHeader;
+            document.getElementById('reelscout-sub').innerText = translations[lang].reelscoutSub;
             document.getElementById('short-title').innerText = translations[lang].shortTitle;
             document.getElementById('long-title').innerText = translations[lang].longTitle;
             document.getElementById('contact-label').innerText = translations[lang].contactLabel;
@@ -509,7 +631,6 @@
             document.getElementById('job4-pos').innerText = translations[lang].job4Pos;
             document.getElementById('job4-date').innerText = translations[lang].job4Date;
             document.getElementById('job4-desc').innerText = translations[lang].job4Desc;
-            document.getElementById('rec-header').innerText = translations[lang].recHeader;
 
             document.querySelectorAll('.card-title').forEach(title => {
                 const text = title.getAttribute(`data-${lang}`);
@@ -526,10 +647,30 @@
             const content = document.getElementById('exp-content');
             content.classList.toggle('open');
             this.innerText = content.classList.contains('open') ? translations[currentLang].expBtnClose : translations[currentLang].expBtn;
+            pulseGrain();
             if (content.classList.contains('open')) {
                 setTimeout(() => content.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
             }
         };
+
+        // Grain pulse (film-grain emphasis on explicit user actions, desktop only)
+        function pulseGrain() {
+            if (isMobile) return;
+            const el = document.getElementById('grain-overlay');
+            if (!el) return;
+            if (typeof gsap !== 'undefined') {
+                gsap.timeline()
+                    .to(el, { opacity: 0.12, duration: 0.15, ease: 'power1.out' })
+                    .to(el, { opacity: 0.03, duration: 0.15, ease: 'power1.in' });
+            } else {
+                el.style.transition = 'opacity 0.3s';
+                el.style.opacity = '0.12';
+                setTimeout(() => { el.style.opacity = '0.03'; }, 150);
+            }
+        }
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', pulseGrain);
+        });
 
         // Lazy load Vimeo iframes
         const observer = new IntersectionObserver((entries) => {
@@ -549,111 +690,6 @@
 
         document.querySelectorAll('.card').forEach(card => observer.observe(card));
 
-        // Video autoplay fix
-        const heroVideo = document.querySelector('.hero-video-bg');
-        if (heroVideo) {
-            const playVideo = () => {
-                heroVideo.play().catch(() => {});
-                document.removeEventListener('touchstart', playVideo);
-                document.removeEventListener('click', playVideo);
-            };
-            document.addEventListener('touchstart', playVideo, { once: true });
-            document.addEventListener('click', playVideo, { once: true });
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) heroVideo.play().catch(() => {});
-            });
-        }
-
-        // Optimized Three.js (runs after defer)
-        let scene, camera, renderer, objects = [], clock;
-        function initThreeJS() {
-            if (!THREE) return;
-
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xfdfdfd);
-
-            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.z = 10;
-
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            renderer = new THREE.WebGLRenderer({
-                antialias: !isMobile,
-                powerPreference: "high-performance"
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-            document.getElementById('canvas-container').classList.add('loaded');
-
-            // Optimized shaders (mediump precision)
-            const vertexShader = `varying vec2 vUv; varying vec3 vNormal; void main() { vUv = uv; vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
-            const fragmentShader = `precision mediump float; uniform vec3 colorTop; uniform vec3 colorBot; uniform float time; uniform float grainScale; varying vec2 vUv; varying vec3 vNormal; float random(vec2 p) { return fract(cos(dot(p, vec2(23.1406, 2.6651))) * 12345.6789); } void main() { vec3 lightPos = vec3(5.0, 5.0, 10.0); float light = max(dot(vNormal, normalize(lightPos)), 0.0); vec3 finalColor = mix(colorBot, colorTop, vUv.y + 0.2); finalColor *= (0.8 + light * 0.4); float noise = random(gl_FragCoord.xy * grainScale + time); finalColor += (noise - 0.5) * 0.15; gl_FragColor = vec4(pow(finalColor, vec3(1.1)), 1.0); }`;
-
-            function createMat(c1, c2) {
-                return new THREE.ShaderMaterial({
-                    uniforms: {
-                        time: { value: 0 },
-                        colorTop: { value: new THREE.Color(c1) },
-                        colorBot: { value: new THREE.Color(c2) },
-                        grainScale: { value: 1.5 }
-                    },
-                    vertexShader, fragmentShader
-                });
-            }
-
-            // Reduced geometry detail
-            const sphereLeft = new THREE.Mesh(new THREE.IcosahedronGeometry(2.2, 12), createMat('#1a4040', '#000000'));
-            sphereLeft.position.set(-5.5, 0, 0);
-            objects.push(sphereLeft);
-
-            const sphereRight = new THREE.Mesh(new THREE.SphereGeometry(2.8, 32, 32), createMat('#e05e5e', '#f9a825'));
-            sphereRight.position.set(6, -3.5, 2);
-            objects.push(sphereRight);
-
-            const torusTop = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.4, 8, 32), createMat('#ffffff', '#cceeff'));
-            torusTop.position.set(5, 3.5, -2);
-            objects.push(torusTop);
-
-            scene.add(sphereLeft, sphereRight, torusTop);
-            clock = new THREE.Clock();
-
-            let mouseX = 0, mouseY = 0;
-            document.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
-                mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                const t = clock.getElapsedTime();
-                objects.forEach(m => m.material.uniforms.time.value = t * 0.5);
-
-                sphereLeft.rotation.y += 0.002;
-                sphereRight.rotation.y -= 0.001;
-                torusTop.rotation.z += 0.005;
-
-                sphereLeft.position.x += (-5.5 + mouseX * 2 - sphereLeft.position.x) * 0.05;
-                sphereLeft.position.y += (mouseY * 2 - sphereLeft.position.y) * 0.05;
-                sphereRight.position.x += (6 + mouseX * -1.5 - sphereRight.position.x) * 0.05;
-                sphereRight.position.y += (-3.5 + mouseY * -1.5 - sphereRight.position.y) * 0.05;
-
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            // Pause on hidden
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) clock.stop();
-                else clock.start();
-            });
-        }
-
         // GSAP animations (runs after defer)
         function initGSAP() {
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
@@ -663,13 +699,40 @@
                 .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
                 .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
                 .from(".skills-container", { y: 20, opacity: 0, duration: 0.6 }, "-=0.5");
+
+            const fills = gsap.utils.toArray('.pipeline-fill');
+            if (fills.length) {
+                gsap.fromTo(fills,
+                    { width: '0%' },
+                    {
+                        width: function(i) { return (fills[i].dataset.width || '100') + '%'; },
+                        duration: 1.1, ease: 'power2.out', stagger: 0.15,
+                        scrollTrigger: {
+                            trigger: '.dashboard-mock',
+                            start: 'top 85%',
+                            once: true
+                        }
+                    }
+                );
+            }
         }
 
         // Initialize when scripts load
         window.addEventListener('load', () => {
-            initThreeJS();
             initGSAP();
         });
+
+        // Live local time (Europe/Moscow)
+        function updateLocalTime() {
+            const el = document.getElementById('local-time');
+            if (!el) return;
+            const time = new Date().toLocaleTimeString('en-GB', {
+                timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit'
+            });
+            el.textContent = `Nizhny Novgorod — ${time} (UTC+3)`;
+        }
+        updateLocalTime();
+        setInterval(updateLocalTime, 30000);
     </script>
 </body>
 </html>
