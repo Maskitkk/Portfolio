@@ -6,342 +6,486 @@
     <title>Matvey Sporshev | Video Editor & AI Specialist</title>
 
     <!-- Preload critical fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 
     <!-- Defer non-critical JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
     <style>
-        /* Critical CSS above-the-fold (hero + nav) */
+        /* ============ Tokens ============ */
         :root {
             --bg-color: #0d0f12;
+            --bg-deep: #0a0a0a;
             --bg-panel: #16191d;
             --text-main: #f2f2f0;
             --text-muted: #8a8f98;
-            --accent: #e8703a;
-            --accent-teal: #2dd4bf;
-            --glass-bg: rgba(22, 25, 29, 0.55);
+            --accent: #6ea8ff;
             --glass-border: rgba(255, 255, 255, 0.08);
             --grid-line: rgba(255, 255, 255, 0.06);
-            --mono-font: 'JetBrains Mono', monospace;
+
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --space-gutter: clamp(1.25rem, 4vw, 4rem);
+            --space-section: clamp(6rem, 13vw, 11rem);
+            --radius: 4px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* ============ Base ============ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        a:focus-visible, button:focus-visible, .lang-switch:focus-visible, .experience-toggle:focus-visible {
-            outline: 2px solid var(--accent-teal);
-            outline-offset: 2px;
+        a:focus-visible, button:focus-visible, .lang-switch:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
         }
         html { scroll-behavior: smooth; }
         body {
             background-color: var(--bg-color);
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-body);
             color: var(--text-main);
             overflow-x: hidden;
             width: 100vw;
+            line-height: 1.6;
         }
-
         #ui-layer { position: relative; z-index: 1; width: 100%; }
+        .mono {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        section { scroll-margin-top: 4.5rem; }
 
-        nav {
+        /* ============ Nav bar ============ */
+        .site-nav {
             position: fixed; top: 0; left: 0; right: 0;
-            padding: 1.25rem 4vw;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            background: rgba(13,15,18,0.7);
+            padding: 1.1rem var(--space-gutter);
+            z-index: 90;
+            background: rgba(13, 15, 18, 0.6);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid transparent;
         }
         .logo {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600; font-size: 1.2rem;
-            font-style: italic; text-transform: none;
+            font-family: var(--font-head);
+            font-weight: 500; font-size: 1.05rem;
+            letter-spacing: 0.08em;
+            color: var(--text-main); text-decoration: none;
         }
+        .nav-right { display: flex; align-items: center; gap: 1.1rem; }
         .lang-switch {
-            cursor: pointer; font-size: 0.85rem; font-weight: 500;
-            padding: 8px 16px; border: 1px solid var(--glass-border);
-            border-radius: 20px; background: rgba(255,255,255,0.06);
-            color: var(--text-main);
-            backdrop-filter: blur(4px); transition: all 0.2s;
+            cursor: pointer; font-size: 0.8rem; font-weight: 500;
+            color: var(--text-muted); letter-spacing: 0.1em;
+            transition: color 0.2s; background: none; border: none;
         }
-        .lang-switch:hover { background: rgba(255,255,255,0.12); }
-        .nav-right {
-            display: flex; align-items: center; gap: 0.75rem;
+        .lang-switch:hover { color: var(--text-main); }
+        .hamburger {
+            position: relative;
+            width: 34px; height: 34px;
+            background: none; border: none; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 7px;
         }
-        .nav-cta {
-            padding: 8px 18px; border-radius: 20px;
-            background: var(--accent); color: white;
-            font-size: 0.85rem; text-decoration: none;
-            transition: all 0.2s;
+        .hamburger span {
+            display: block; width: 22px; height: 1.5px;
+            background: var(--text-main); border-radius: 1px;
+            transition: transform 0.25s var(--ease), opacity 0.2s;
         }
-        .nav-cta:hover { opacity: 0.85; }
+        .hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(4.25px) rotate(45deg); }
+        .hamburger[aria-expanded="true"] span:nth-child(2) { transform: translateY(-4.25px) rotate(-45deg); }
 
-        #grain-overlay {
-            position: fixed; inset: 0; z-index: 50; pointer-events: none;
-            opacity: 0.06; mix-blend-mode: overlay;
+        /* ============ Fullscreen nav overlay ============ */
+        #nav-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            background: var(--bg-deep);
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.28s var(--ease), visibility 0.28s;
         }
-        #grain-overlay svg { width: 100%; height: 100%; display: block; }
-
-        .hero {
-            position: relative; min-height: 90vh;
+        #nav-overlay.is-open { opacity: 1; visibility: visible; }
+        .nav-overlay-inner {
+            height: 100%;
+            padding: 1.1rem var(--space-gutter) 4rem;
             display: flex; flex-direction: column;
-            justify-content: flex-start; align-items: center;
-            text-align: center; padding: 140px 2rem 4rem;
-            overflow: hidden; z-index: 60;
         }
-        .hero::before {
-            content: ''; position: absolute; inset: 0; z-index: 0;
-            background-image:
-                linear-gradient(var(--grid-line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none; opacity: 0.5;
+        .nav-overlay-top {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1.1rem;
         }
-        .hero-parallax {
-            position: absolute; inset: 0; z-index: -1;
-            overflow: hidden; pointer-events: none;
-            will-change: transform;
+        .nav-overlay-close {
+            background: none; border: none; cursor: pointer;
+            font-family: var(--font-head); font-size: 2.2rem; line-height: 1;
+            color: var(--text-main); transition: color 0.2s, transform 0.2s;
         }
-        .parallax-layer {
-            position: absolute; inset: -5%;
-            width: 110%; height: 110%;
-            will-change: transform;
-            pointer-events: none;
+        .nav-overlay-close:hover { color: var(--accent); transform: rotate(90deg); }
+        .nav-overlay-links {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; gap: clamp(0.5rem, 3vh, 1.6rem);
         }
-        .parallax-layer img {
+        .nav-overlay-link {
+            font-family: var(--font-head);
+            font-size: clamp(2.4rem, 7vw, 4rem);
+            line-height: 1.15; font-weight: 500;
+            color: var(--text-main); text-decoration: none;
+            width: fit-content; position: relative;
+            transition: transform 0.25s var(--ease);
+        }
+        .nav-overlay-link::after {
+            content: '';
+            position: absolute; left: 0; bottom: 0.08em;
+            height: 2px; width: 0%;
+            background: var(--accent);
+            transition: width 0.3s var(--ease);
+        }
+        .nav-overlay-link:hover { transform: translateX(8px); }
+        .nav-overlay-link:hover::after { width: 100%; }
+
+        /* ============ Hero ============ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center;
+            padding: 6rem var(--space-gutter) 7rem;
+            overflow: hidden;
+        }
+        .hero-bg { position: absolute; inset: 0; z-index: 0; }
+        .hero-bg img {
             width: 100%; height: 100%;
             object-fit: cover; object-position: center;
             display: block;
-            filter: blur(6px);
         }
-        .parallax-layer--mountain img { transform: translateY(37%); }
-        .hero-meta {
-            font-family: var(--mono-font); font-size: 0.7rem;
-            letter-spacing: 0.15em; text-transform: uppercase;
-            color: rgba(242,242,240,0.85); margin-bottom: 1rem;
-            opacity: 1; position: relative; z-index: 1;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        .hero::after {
+            content: '';
+            position: absolute; inset: 0; z-index: 1;
+            background:
+                linear-gradient(to top,
+                    rgba(5, 6, 8, 0.88) 0%,
+                    rgba(13, 15, 18, 0.5) 45%,
+                    rgba(13, 15, 18, 0.2) 100%);
+            pointer-events: none;
         }
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3.5rem, 9vw, 7rem);
-            line-height: 1.05; font-weight: 400;
-            margin-bottom: 1.5rem; max-width: 1200px;
-            color: var(--text-main); position: relative; z-index: 1;
-            background: none; backdrop-filter: none; border: none;
-            text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+        .hero-title {
+            position: relative; z-index: 2;
+            font-family: var(--font-head);
+            font-weight: 500;
+            font-size: clamp(3.25rem, 11vw, 8.75rem);
+            line-height: 0.98;
+            max-width: 18ch;
+            color: var(--text-main);
         }
-        .hero h1 span { color: var(--accent); font-style: normal; }
-        .subtitle {
-            font-size: 1.1rem; line-height: 1.6;
-            color: rgba(242,242,240,0.97); margin-bottom: 2rem;
-            max-width: 500px; font-weight: 400; position: relative;
-            z-index: 1;
-            background: rgba(13,15,18,0.55);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 0.9rem 1.6rem;
-            backdrop-filter: blur(6px);
-            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        .hero-title span { color: var(--accent); }
+        .hero-tags {
+            position: relative; z-index: 2;
+            margin-top: 2.5rem;
+            color: rgba(242, 242, 240, 0.85);
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
         }
-        .skills-container {
-            margin-top: 1rem; display: flex; gap: 1rem;
-            flex-wrap: wrap; justify-content: center;
-            max-width: 800px; position: relative; z-index: 1;
-            background: none; backdrop-filter: none; border: none;
-            text-shadow: 0 2px 16px rgba(0,0,0,0.5);
-        }
-        .skill-pill {
-            padding: 7px 18px; background: rgba(22,25,29,0.55);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px; font-size: 0.85rem; color: var(--text-main);
-            font-family: var(--mono-font); letter-spacing: 0.04em;
+        .hero-corner {
+            position: absolute; z-index: 2;
+            left: var(--space-gutter); bottom: 2rem;
+            color: rgba(242, 242, 240, 0.55);
         }
 
-        /* Below-the-fold styles (non-critical) */
-        .content-section {
-            padding: 2rem 4vw 4rem; max-width: 1600px; margin: 0 auto;
+        /* ============ Sections ============ */
+        .section {
+            position: relative;
+            padding: var(--space-section) var(--space-gutter);
+            max-width: 1280px; margin: 0 auto;
         }
         .section-header {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.8rem; margin-bottom: 1rem; text-align: center;
+            font-family: var(--font-head);
+            font-weight: 500;
+            font-size: clamp(2.75rem, 7vw, 5rem);
+            line-height: 1.05;
+            margin-bottom: 1.25rem;
+            text-align: center;
         }
-        .sub-header {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.7rem; margin: 3rem 0 2rem;
-            text-align: center; width: 100%;
-        }
-        .experience-toggle {
-            display: block; margin: 4rem auto 2rem;
-            padding: 12px 24px; border: 1px solid var(--glass-border);
-            background: var(--glass-bg); color: var(--text-main);
-            border-radius: 30px;
-            font-family: 'Inter', sans-serif; cursor: pointer;
-            font-size: 1rem; transition: all 0.3s ease;
-        }
-        .experience-toggle:hover { background: rgba(255,255,255,0.08); }
-        .job-company {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600; font-size: 1.05rem;
-        }
-        .job-pos {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600; color: var(--text-main);
-            font-size: 0.95rem;
-        }
-        .job-date {
-            font-family: var(--mono-font);
-            font-weight: 400; font-size: 0.85rem;
-            color: var(--text-muted); display: block;
-            margin: 2px 0 6px;
-        }
-        .experience-content {
-            max-height: 0; overflow: hidden;
-            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 800px; margin: 0 auto; padding: 0 2rem;
-        }
-        .experience-content.open { max-height: 2000px; margin-bottom: 4rem; }
-        .exp-item { margin-bottom: 24px; line-height: 1.6; color: var(--text-muted); }
-        .exp-item strong { color: var(--text-main); }
-        .recommendation-section {
-            text-align: center; margin-top: 3rem;
-            border-top: 1px solid var(--glass-border); padding-top: 3rem;
+        .section-sub {
+            color: var(--text-muted);
+            font-size: 1.15rem; max-width: 55ch; line-height: 1.7;
+            margin: 0 auto 3.5rem;
+            text-align: center;
         }
 
-        /* Grids */
-        .grid-vertical {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 3rem 2rem; margin-bottom: 5rem; align-items: start;
+        /* ============ Work ============ */
+        .work-bg {
+            position: absolute; z-index: 0;
+            left: 50%; top: -5%; bottom: -5%;
+            width: 100vw;
+            transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.6s var(--ease);
+            pointer-events: none;
         }
-        .grid-horizontal {
-            display: grid; grid-template-columns: 1fr;
-            gap: 3.5rem 0; align-items: start;
-            max-width: 900px; margin: 0 auto;
+        .work-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            filter: blur(4px);
+            opacity: 0.4;
         }
+        .work-bg.is-visible { opacity: 1; }
+        .work-filters {
+            position: relative; z-index: 1;
+            display: flex; flex-wrap: wrap; gap: 1.8rem;
+            justify-content: center;
+            margin-bottom: 3.5rem;
+        }
+        .filter-tab {
+            background: none; border: none; cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 0.15rem 0;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .filter-tab::after {
+            content: '';
+            position: absolute; left: 0; bottom: -3px;
+            height: 1.5px; width: 0%;
+            background: var(--accent);
+            transition: width 0.3s var(--ease);
+        }
+        .filter-tab:hover { color: var(--text-main); }
+        .filter-tab.active { color: var(--text-main); }
+        .filter-tab.active::after { width: 100%; }
 
-        /* Portfolio Cards - Lazy loaded */
-        .portfolio-item {
-            display: flex; flex-direction: column; width: 100%;
-            min-width: 0; /* let narrow grid tracks shrink below min-content */
-            border-top: 1px solid var(--grid-line);
-            padding-top: 1.25rem;
+        .work-grid {
+            position: relative; z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(1.75rem, 3.5vw, 3.5rem);
+            align-items: start;
         }
-        .portfolio-item:first-child { border-top: none; }
-        .card-filename {
-            font-family: var(--mono-font); font-size: 0.7rem;
-            color: var(--text-muted); margin-bottom: 6px;
-            display: flex; justify-content: space-between;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        .work-tile {
+            opacity: 1;
+            transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
         }
-        .card {
-    background: var(--glass-bg); backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); border-radius: 20px;
-    overflow: hidden; transition: transform 0.4s ease;
-    position: relative; display: flex;
-    align-items: center; justify-content: center;
-    cursor: pointer; width: 100%; height: 0; padding-bottom: 177.78%;
-    background-size: cover; background-position: center;
-}
-        .card.horizontal { padding-bottom: 56.25%; } /* 16/9 */
-        .card iframe {
-            position: absolute; top: 0; left: 0;
+        .work-tile[data-category="long"] { grid-column: 1 / -1; }
+        .work-tile.is-hidden { display: none; }
+        .work-card {
+            position: relative; width: 100%;
+            overflow: hidden;
+            background: #14161a;
+            cursor: pointer;
+            transition: transform 0.35s var(--ease);
+        }
+        .work-card.vertical { aspect-ratio: 9 / 16; }
+        .work-card.horizontal { aspect-ratio: 16 / 9; }
+        .work-card:hover { transform: translateY(-4px); }
+        .work-card iframe {
+            position: absolute; inset: 0;
             width: 100%; height: 100%; border: none;
-            opacity: 0; transition: opacity 0.3s;
+            opacity: 0; transition: opacity 0.4s var(--ease);
         }
-        .card.loaded iframe { opacity: 1; }
-
-        .card-bg-1, .card-bg-2, .card-bg-3, .card-bg-ai {
-            background: linear-gradient(135deg, #16191d, #1f2329);
-        }
-        .card-bg-1::after, .card-bg-3::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(45,212,191,0.08), transparent);
+        .work-card.loaded iframe { opacity: 1; }
+        .work-hover {
+            position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+            display: flex; justify-content: center; align-items: baseline; gap: 1rem;
+            padding: 1.4rem 1.25rem 1rem;
+            background: linear-gradient(to top, rgba(5, 6, 8, 0.72), transparent);
+            opacity: 0;
+            transition: opacity 0.3s var(--ease);
             pointer-events: none;
         }
-        .card-bg-2::after, .card-bg-ai::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(232,112,58,0.08), transparent);
+        .work-card:hover .work-hover { opacity: 1; }
+        .work-type { font-family: var(--font-head); font-weight: 500; font-size: 1.05rem; }
+        .work-dur { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+
+        /* ============ ReelScout ============ */
+        .reelscout-bg {
+            position: absolute; z-index: 0;
+            left: 50%; top: -5%; bottom: -5%;
+            width: 100vw;
+            transform: translateX(-50%);
+            opacity: 0.4;
             pointer-events: none;
         }
-        .card-timecode {
-            position: absolute; bottom: 8px; right: 8px;
-            font-family: var(--mono-font); font-size: 0.65rem;
-            color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.5);
-            padding: 2px 6px; border-radius: 3px; z-index: 2;
-            pointer-events: none;
+        .reelscout-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+            filter: blur(4px);
         }
-        .card-title {
-            margin-top: 1rem; font-weight: 500;
-            font-size: 0.95rem; color: var(--text-main);
-            text-align: left; padding-left: 5px;
-        }
-
-        #short-title + .grid-vertical {
-            grid-template-columns: repeat(3, 1fr);
-            justify-items: center;
-        }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(232,112,58,0.15); }
-
-        footer { padding: 6rem 2rem; text-align: center; background: var(--bg-color); }
-        .local-time {
-            font-family: var(--mono-font); font-size: 0.75rem;
-            color: var(--text-muted); margin-bottom: 1.5rem;
-        }
-        .contact-link {
-            font-family: 'Playfair Display', serif; font-size: 1.8rem;
-            color: var(--text-main); text-decoration: none;
-            border-bottom: 1px solid var(--glass-border);
-            display: inline-block; margin-bottom: 0.5rem;
-        }
-
-        /* ReelScout dashboard mock */
-        .reelscout-sub {
-            text-align: center; max-width: 560px; margin: 0 auto;
-            color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;
-        }
+        #reelscout > *:not(.reelscout-bg) { position: relative; z-index: 1; }
         .dashboard-mock {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-            background: var(--bg-panel); border: 1px solid var(--glass-border);
-            border-radius: 12px; padding: 2rem; margin: 2rem auto;
+            background: rgba(22, 25, 29, 0.72);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem; margin: 3rem auto 0;
             max-width: 1000px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
         .pipeline-card {
             display: flex; flex-direction: column; gap: 8px;
-            font-family: var(--mono-font);
+            font-family: var(--font-mono);
         }
-        .pipeline-icon { color: var(--accent-teal); font-size: 0.7rem; }
+        .pipeline-icon { color: var(--accent); font-size: 0.7rem; }
         .pipeline-label { font-size: 0.8rem; letter-spacing: 0.05em; color: var(--text-main); }
         .pipeline-tool { font-size: 0.7rem; color: var(--text-muted); }
-        .pipeline-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-        .pipeline-fill { height: 100%; background: var(--accent-teal); }
-        .pipeline-status { font-size: 0.7rem; color: var(--accent); }
+        .pipeline-bar { height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 2px; overflow: hidden; }
+        .pipeline-fill { height: 100%; background: rgba(255, 255, 255, 0.45); }
+        .pipeline-status { font-size: 0.7rem; color: var(--text-muted); }
         .reelscout-hardware {
             grid-column: 1 / -1; margin-top: 0.5rem; padding-top: 1rem;
             border-top: 1px solid var(--glass-border);
-            font-family: var(--mono-font); font-size: 0.65rem;
+            font-family: var(--font-mono); font-size: 0.65rem;
             color: var(--text-muted); text-align: center; opacity: 0.6;
             letter-spacing: 0.05em;
         }
 
+        /* ============ Experience timeline ============ */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; }
+        .timeline::before {
+            content: '';
+            position: absolute; top: 0.4rem; bottom: 0.4rem;
+            left: clamp(100px, 17vw, 160px);
+            width: 1px; background: rgba(255, 255, 255, 0.12);
+        }
+        .timeline-item {
+            display: grid;
+            grid-template-columns: clamp(100px, 17vw, 160px) 1fr;
+            gap: clamp(1.5rem, 4vw, 3rem);
+            margin-bottom: 3.75rem;
+            position: relative;
+            text-align: center;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: calc(clamp(100px, 17vw, 160px) + clamp(1.5rem, 4vw, 3rem) / 2);
+            top: 0.55rem;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--bg-color);
+            border: 1.5px solid var(--accent);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        .timeline-date {
+            font-family: var(--font-mono);
+            font-size: 0.72rem; letter-spacing: 0.05em;
+            color: var(--text-muted);
+            text-align: right; padding-top: 0.35rem;
+            line-height: 1.5;
+        }
+        .timeline-content { display: flex; flex-direction: column; align-items: center; }
+        .timeline-company {
+            font-family: var(--font-head);
+            font-weight: 500; font-size: 1.75rem; line-height: 1.1;
+            margin-bottom: 0.2rem;
+        }
+        .timeline-pos {
+            font-size: 0.9rem; color: var(--text-muted);
+            margin-bottom: 0.7rem; letter-spacing: 0.02em;
+        }
+        .timeline-desc { color: var(--text-muted); font-size: 0.95rem; max-width: 62ch; }
+
+        /* ============ Recommendation + lightbox ============ */
+        .recommendation {
+            margin-top: 5rem; padding-top: 3.5rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .recommendation summary {
+            list-style: none; cursor: pointer; user-select: none;
+            color: var(--text-muted); margin-bottom: 0;
+            transition: color 0.2s;
+        }
+        .recommendation summary::-webkit-details-marker { display: none; }
+        .recommendation summary:hover { color: var(--text-main); }
+        .recommendation summary::after {
+            content: '+'; margin-left: 0.6rem; color: var(--accent);
+        }
+        .recommendation[open] summary::after { content: '−'; }
+        .recommendation-thumb {
+            display: none; border: none; background: none; cursor: zoom-in;
+            width: 100%; max-width: 420px; padding: 0; margin-top: 1.5rem;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        .recommendation[open] .recommendation-thumb { display: block; }
+        .recommendation-thumb:hover { transform: translateY(-4px); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65); }
+        .recommendation-thumb img { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+
+        #lightbox {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(5, 6, 8, 0.92);
+            display: flex; align-items: center; justify-content: center;
+            padding: 4vw;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.25s var(--ease), visibility 0.25s;
+            cursor: zoom-out;
+        }
+        #lightbox.is-open { opacity: 1; visibility: visible; }
+        #lightbox img {
+            max-width: 92vw; max-height: 90vh;
+            width: auto; height: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+        }
+
+        /* ============ Contact / footer ============ */
+        #contact { padding-top: var(--space-section); }
+        .contact-wrap {
+            max-width: 1280px; margin: 0 auto;
+            padding: 0 var(--space-gutter) 6rem;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .contact-link {
+            font-family: var(--font-head);
+            font-weight: 500;
+            font-size: clamp(1.5rem, 4vw, 2.6rem);
+            line-height: 1.25;
+            color: var(--text-main); text-decoration: none;
+            display: inline-block; position: relative;
+        }
+        .contact-link::after {
+            content: '';
+            position: absolute; left: 0; bottom: -4px;
+            height: 1.5px; width: 100%;
+            background: var(--glass-border);
+            transition: background 0.25s var(--ease);
+        }
+        .contact-link:hover::after { background: var(--accent); }
+        .contact-list { margin: 2rem 0 3rem; display: flex; flex-direction: column; gap: 1.1rem; }
+        .local-time { color: var(--text-muted); font-size: 0.75rem; }
+
+        /* ============ Grain ============ */
+        #grain-overlay {
+            position: fixed; inset: 0; z-index: 50; pointer-events: none;
+            opacity: 0.05; mix-blend-mode: overlay;
+        }
+        #grain-overlay svg { width: 100%; height: 100%; display: block; }
+
+        /* ============ Responsive ============ */
         @media (max-width: 768px) {
-            .grid-vertical { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
-            #short-title + .grid-vertical { grid-template-columns: repeat(2, 1fr); }
-            .grid-horizontal { grid-template-columns: 1fr; }
-            .section-header { font-size: 2.2rem; }
-            .hero { min-height: 50vh; padding-top: 100px; }
+            .work-grid { grid-template-columns: 1fr; }
+            .hero-tags { font-size: 0.65rem; letter-spacing: 0.1em; }
+            .timeline { padding-left: 1.25rem; }
+            .timeline::before { left: 0; }
+            .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }
+            .timeline-item::before { left: -1.25rem; }
+            .timeline-date { text-align: center; }
+            .site-nav { padding-top: calc(1.1rem + env(safe-area-inset-top, 0px)); }
             .dashboard-mock { grid-template-columns: 1fr; gap: 1.75rem; padding: 1.5rem; }
-            nav {
-                padding: 0.75rem 1rem;
-                /* clear the status bar / notch; bar itself fills the physical top edge */
-                padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
-            }
+            .work-hover { opacity: 1; }
+        }
+
+        @media (hover: none) {
+            .work-hover { opacity: 1; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .hero-parallax, .parallax-layer { transform: none !important; }
+            html { scroll-behavior: auto; }
+            .work-bg, .work-hover, .nav-overlay-link { transition: none !important; }
         }
     </style>
 </head>
@@ -353,251 +497,295 @@
                 <rect width="100%" height="100%" filter="url(#grain-noise)"/>
             </svg>
         </div>
-        <nav>
-            <div class="logo" id="site-logo">MATVEY SPORSHEV</div>
+
+        <nav class="site-nav">
+            <a href="#top" class="logo" id="site-logo">MATVEY SPORSHEV</a>
             <div class="nav-right">
-                <a href="#footer" class="nav-cta" id="nav-cta">Contact</a>
-                <div class="lang-switch" id="lang-btn">EN / RU</div>
+                <div class="lang-switch" id="lang-btn" role="button" tabindex="0">EN / RU</div>
+                <button class="hamburger" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-overlay">
+                    <span></span><span></span>
+                </button>
             </div>
         </nav>
 
+        <div id="nav-overlay" aria-hidden="true">
+            <div class="nav-overlay-inner">
+                <div class="nav-overlay-top">
+                    <span class="logo">MATVEY SPORSHEV</span>
+                    <button class="nav-overlay-close" id="nav-overlay-close" aria-label="Close">×</button>
+                </div>
+                <nav class="nav-overlay-links">
+                    <a href="#work" class="nav-overlay-link" data-target="#work" data-i18n="navWork">Work</a>
+                    <a href="#reelscout" class="nav-overlay-link" data-target="#reelscout" data-i18n="navReel">ReelScout</a>
+                    <a href="#experience" class="nav-overlay-link" data-target="#experience" data-i18n="navExp">Experience</a>
+                    <a href="#contact" class="nav-overlay-link" data-target="#contact" data-i18n="navContact">Contact</a>
+                </nav>
+            </div>
+        </div>
+
         <main>
-            <section class="hero">
-                <div class="hero-parallax" id="hero-parallax" aria-hidden="true">
-                    <picture class="parallax-layer" data-depth="0.1">
-                        <source srcset="skies.webp" type="image/webp">
-                        <img src="skies.png" alt="" loading="eager" fetchpriority="high">
-                    </picture>
-                    <picture class="parallax-layer parallax-layer--mountain" data-depth="0.3">
-                        <source srcset="mountain-layer.webp" type="image/webp">
-                        <img src="mountain-layer.png" alt="" loading="eager">
-                    </picture>
-                    <picture class="parallax-layer" data-depth="0.6">
-                        <source srcset="hill-layer.webp" type="image/webp">
-                        <img src="hill-layer.png" alt="" loading="eager">
+            <section class="hero" id="top">
+                <div class="hero-bg" aria-hidden="true">
+                    <picture>
+                        <source srcset="hero.webp" type="image/webp">
+                        <img src="hero.png" alt="" fetchpriority="high" decoding="async">
                     </picture>
                 </div>
-                <div class="hero-meta" id="hero-meta">REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS</div>
-                <h1 id="hero-title">Classic Editing,<br><span>AI Evolution.</span></h1>
-                <p class="subtitle" id="hero-sub">Professional video editing combining traditional storytelling with generative AI solutions.</p>
-                <div class="skills-container">
-                    <div class="skill-pill">Adobe Premiere Pro</div>
-                    <div class="skill-pill">Adobe After Effects</div>
-                    <div class="skill-pill">Sound Design</div>
-                    <div class="skill-pill">Generative AI</div>
+                <p class="hero-corner mono" data-i18n="heroMeta">REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS</p>
+                <h1 class="hero-title" id="hero-title">Classic Editing,<br><span>AI Evolution.</span></h1>
+                <p class="hero-tags mono" data-i18n="heroTags">Adobe Premiere Pro · After Effects · Sound Design · Generative AI</p>
+            </section>
+
+            <section class="section" id="work">
+                <div class="work-bg" id="work-bg" aria-hidden="true">
+                    <img id="work-bg-img" src="" alt="" loading="lazy" data-short="after.webp" data-long="premiere.webp" data-ai="after.webp">
+                </div>
+                <h2 class="section-header" data-i18n="workHeader">Work</h2>
+                <div class="work-filters" role="tablist" aria-label="Filter projects">
+                    <button class="filter-tab" data-filter="short" role="tab" aria-selected="false" data-i18n="fShort">Short Form</button>
+                    <button class="filter-tab" data-filter="long" role="tab" aria-selected="false" data-i18n="fLong">Long Form</button>
+                    <button class="filter-tab" data-filter="ai" role="tab" aria-selected="false" data-i18n="fAI">AI</button>
+                </div>
+
+                <div class="work-grid" id="work-grid">
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/9LCEUv8y6XDpXgRK33hj38">
+                            <iframe title="Real Estate reel" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w1">Real Estate</span>
+                                <span class="work-dur">0:47</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/s1DVCSBXNfVi3xzmT9SvZ4">
+                            <iframe title="Podcast highlight" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w2">Podcast highlight</span>
+                                <span class="work-dur">0:38</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/mbpg6ok6tLp1gR5H2WgqnD">
+                            <iframe title="Wedding Teaser" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w3">Wedding Teaser</span>
+                                <span class="work-dur">0:59</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/g3U4jZBLYAXzjEjiZXcDJB">
+                            <iframe title="Talking Reels" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w4">Talking Reels</span>
+                                <span class="work-dur">0:52</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/3DEaZHBoZjJeW8eV7yjrcD">
+                            <iframe title="Brand Ad" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w5">Brand Ad</span>
+                                <span class="work-dur">0:31</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="short">
+                        <div class="work-card vertical" data-src="https://kinescope.io/wK5aaLxtiyMguep6Vo2KHM">
+                            <iframe title="Entertainment Reels" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w6">Entertainment Reels</span>
+                                <span class="work-dur">1:24</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="long">
+                        <div class="work-card horizontal" data-src="https://kinescope.io/swdf8Nkx5RUSn3AZxVdH9q">
+                            <iframe title="YouTube Format" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w7">YouTube Format</span>
+                                <span class="work-dur">3:48</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="long">
+                        <div class="work-card horizontal" data-src="https://kinescope.io/vZX521F9nNCaSNrF5qN4Mh">
+                            <iframe title="Inspirational Video" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w8">Inspirational Video</span>
+                                <span class="work-dur">2:56</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="long">
+                        <div class="work-card horizontal" data-src="https://kinescope.io/oBYN6cJcsPrqDTjkAFp5yb">
+                            <iframe title="Wedding Video" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w9">Wedding Video</span>
+                                <span class="work-dur">3:35</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="ai">
+                        <div class="work-card vertical" data-src="https://kinescope.io/m44zx292YLDDJUjqxBshKf">
+                            <iframe title="AI Motion Study" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w10">Motion Study</span>
+                                <span class="work-dur">0:26</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="ai">
+                        <div class="work-card vertical" data-src="https://kinescope.io/kjNTeRyQs1uyGuBX9kyQkQ">
+                            <iframe title="AI Relight" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w11">Relight</span>
+                                <span class="work-dur">0:19</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="ai">
+                        <div class="work-card vertical" data-src="https://kinescope.io/ijz65oQGj6GBNe3ro9pXFi">
+                            <iframe title="AI Film Look" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w12">Film Look</span>
+                                <span class="work-dur">0:33</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-tile" data-category="ai">
+                        <div class="work-card vertical" data-src="https://kinescope.io/4gWPiXfzHTjdEpiWdakK4u">
+                            <iframe title="AI B-Roll" loading="lazy"></iframe>
+                            <div class="work-hover">
+                                <span class="work-type" data-i18n="w13">B-Roll</span>
+                                <span class="work-dur">0:41</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section class="content-section" id="portfolio">
-                <h2 class="section-header" id="portfolio-header">Featured Work</h2>
-
-                <h3 class="sub-header" id="short-title">Short Form</h3>
-                <div class="grid-vertical">
-                    <div class="portfolio-item">
-                        <div class="card-filename">RE_dubai_v03_final.mp4</div>
-                        <div class="card vertical card-bg-2" data-src="https://kinescope.io/9LCEUv8y6XDpXgRK33hj38">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:47</span>
-                        </div>
-                        <div class="card-title" data-ru="Недвижимость" data-en="Real Estate">Real Estate</div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">PC_highlight_v01_final.mp4</div>
-                        <div class="card vertical card-bg-ai" data-src="https://kinescope.io/s1DVCSBXNfVi3xzmT9SvZ4">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:38</span>
-                        </div>
-                        <div class="card-title" data-ru="Хайлайт подкаста" data-en="Podcast highlight">Podcast highlight</div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">WD_teaser_v02_final.mp4</div>
-                        <div class="card vertical card-bg-1" data-src="https://kinescope.io/mbpg6ok6tLp1gR5H2WgqnD">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:59</span>
-                        </div>
-                        <div class="card-title" data-ru="Свадебный тизер" data-en="Wedding Teaser">Wedding Teaser</div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">TR_interview_v01_final.mp4</div>
-                        <div class="card vertical card-bg-2" data-src="https://kinescope.io/g3U4jZBLYAXzjEjiZXcDJB">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:52</span>
-                        </div>
-                        <div class="card-title" data-ru="Разговорный рилс" data-en="Talking Reels">Talking Reels</div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">BR_launch_v04_final.mp4</div>
-                        <div class="card vertical card-bg-3" data-src="https://kinescope.io/3DEaZHBoZjJeW8eV7yjrcD">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:31</span>
-                        </div>
-                        <div class="card-title" data-ru="Реклама для бренда" data-en="Brand Ad">Brand Ad</div>
-                    </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">ER_challenge_v02_final.mp4</div>
-                        <div class="card vertical card-bg-1" data-src="https://kinescope.io/wK5aaLxtiyMguep6Vo2KHM">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:01:24</span>
-                        </div>
-                        <div class="card-title" data-ru="Развлекательный рилс" data-en="Entertainment Reels">Entertainment Reels</div>
-                    </div>
+            <section class="section" id="reelscout">
+                <div class="reelscout-bg" aria-hidden="true">
+                    <img src="code.webp" alt="" loading="lazy">
                 </div>
-
-                <h3 class="sub-header" id="long-title">Long Form</h3>
-                <div class="grid-horizontal">
-                    <div class="portfolio-item">
-                        <div class="card-filename">YT_documentary_v05_final.mp4</div>
-                        <div class="card horizontal card-bg-2" data-src="https://kinescope.io/swdf8Nkx5RUSn3AZxVdH9q">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:03:48</span>
-                        </div>
-                        <div class="card-title" data-ru="Ютуб-формат" data-en="YouTube Format">YouTube Format</div>
+                <h2 class="section-header" data-i18n="reelscoutHeader">Built: ReelScout</h2>
+                <p class="section-sub" data-i18n="reelscoutSub">
+                    Local AI tool for automated footage review — scene detection,
+                    transcription, and content description, running entirely on-device.
+                </p>
+                <div class="dashboard-mock">
+                    <div class="pipeline-card">
+                        <span class="pipeline-icon">●</span>
+                        <span class="pipeline-label">SCENE DETECTION</span>
+                        <span class="pipeline-tool">PySceneDetect</span>
+                        <div class="pipeline-bar"><div class="pipeline-fill" data-width="100"></div></div>
+                        <span class="pipeline-status">247 scenes found</span>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">INS_motivation_v02_final.mp4</div>
-                        <div class="card horizontal card-bg-3" data-src="https://kinescope.io/vZX521F9nNCaSNrF5qN4Mh">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:02:56</span>
-                        </div>
-                        <div class="card-title" data-ru="Вдохновляющее видео" data-en="Inspirational Video">Inspirational Video</div>
+                    <div class="pipeline-card">
+                        <span class="pipeline-icon">●</span>
+                        <span class="pipeline-label">TRANSCRIPTION</span>
+                        <span class="pipeline-tool">faster-whisper large-v3</span>
+                        <div class="pipeline-bar"><div class="pipeline-fill" data-width="100"></div></div>
+                        <span class="pipeline-status">12 languages detected</span>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">WD_ceremony_v03_final.mp4</div>
-                        <div class="card horizontal card-bg-1" data-src="https://kinescope.io/oBYN6cJcsPrqDTjkAFp5yb">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:03:35</span>
-                        </div>
-                        <div class="card-title" data-ru="Свадебное видео" data-en="Wedding Video">Wedding Video</div>
+                    <div class="pipeline-card">
+                        <span class="pipeline-icon">●</span>
+                        <span class="pipeline-label">SCENE DESCRIPTION</span>
+                        <span class="pipeline-tool">Qwen2.5-VL-7B</span>
+                        <div class="pipeline-bar"><div class="pipeline-fill" data-width="100"></div></div>
+                        <span class="pipeline-status">auto-tagged</span>
                     </div>
+                    <div class="reelscout-hardware">RTX 5060 Ti · LOCAL INFERENCE · NO CLOUD</div>
                 </div>
+            </section>
 
-                <h3 class="sub-header" id="ai-title">AI Experiments</h3>
-                <div class="grid-vertical">
-                    <div class="portfolio-item">
-                        <div class="card-filename">AI_motion_study_v01_final.mp4</div>
-                        <div class="card vertical card-bg-ai" data-src="https://kinescope.io/m44zx292YLDDJUjqxBshKf">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:26</span>
+            <section class="section" id="experience">
+                <h2 class="section-header" data-i18n="expHeader">Work Experience</h2>
+                <p class="section-sub" data-i18n="expSub">Key roles and responsibilities</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="timeline-date" data-i18n="job4Date">December 2025 — Present</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-company" data-i18n="job4Company">Empire City Real Estate</h3>
+                            <p class="timeline-pos" data-i18n="job4Pos">Video Editor</p>
+                            <p class="timeline-desc" data-i18n="job4Desc">Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.</p>
                         </div>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">AI_relight_v02_final.mp4</div>
-                        <div class="card vertical card-bg-ai" data-src="https://kinescope.io/kjNTeRyQs1uyGuBX9kyQkQ">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:19</span>
+                    <div class="timeline-item">
+                        <span class="timeline-date" data-i18n="job1Date">February 2022 — November 2025</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-company" data-i18n="job1Company">EditValue</h3>
+                            <p class="timeline-pos" data-i18n="job1Pos">Quality Control Lead</p>
+                            <p class="timeline-desc" data-i18n="job1Desc">Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client &amp; team communication in English. Workflow organization and deadline management.</p>
                         </div>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">AI_filmlook_v01_final.mp4</div>
-                        <div class="card vertical card-bg-ai" data-src="https://kinescope.io/ijz65oQGj6GBNe3ro9pXFi">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:33</span>
+                    <div class="timeline-item">
+                        <span class="timeline-date" data-i18n="job2Date">October 2024 — Present</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-company" data-i18n="job2Company">AI-Video</h3>
+                            <p class="timeline-pos" data-i18n="job2Pos">Video Editor</p>
+                            <p class="timeline-desc" data-i18n="job2Desc">Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.</p>
                         </div>
                     </div>
-                    <div class="portfolio-item">
-                        <div class="card-filename">AI_broll_v03_final.mp4</div>
-                        <div class="card vertical card-bg-ai" data-src="https://kinescope.io/4gWPiXfzHTjdEpiWdakK4u">
-                            <iframe loading="lazy"></iframe>
-                            <span class="card-timecode">00:00:41</span>
+                    <div class="timeline-item">
+                        <span class="timeline-date" data-i18n="job3Date">September 2019 — December 2023</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-company" data-i18n="job3Company">Optimedia</h3>
+                            <p class="timeline-pos" data-i18n="job3Pos">Video Editor</p>
+                            <p class="timeline-desc" data-i18n="job3Desc">Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.</p>
                         </div>
                     </div>
                 </div>
 
-                <section class="content-section" id="reelscout">
-                    <h2 class="section-header" id="reelscout-header">Built: ReelScout</h2>
-                    <p class="reelscout-sub" id="reelscout-sub">
-                        Local AI tool for automated footage review — scene detection,
-                        transcription, and content description, running entirely on-device.
-                    </p>
-                    <div class="dashboard-mock">
-                        <div class="pipeline-card">
-                            <span class="pipeline-icon">●</span>
-                            <span class="pipeline-label">SCENE DETECTION</span>
-                            <span class="pipeline-tool">PySceneDetect</span>
-                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
-                            <span class="pipeline-status">247 scenes found</span>
-                        </div>
-                        <div class="pipeline-card">
-                            <span class="pipeline-icon">●</span>
-                            <span class="pipeline-label">TRANSCRIPTION</span>
-                            <span class="pipeline-tool">faster-whisper large-v3</span>
-                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
-                            <span class="pipeline-status">12 languages detected</span>
-                        </div>
-                        <div class="pipeline-card">
-                            <span class="pipeline-icon">●</span>
-                            <span class="pipeline-label">SCENE DESCRIPTION</span>
-                            <span class="pipeline-tool">Qwen2.5-VL-7B</span>
-                            <div class="pipeline-bar"><div class="pipeline-fill" style="width:100%" data-width="100"></div></div>
-                            <span class="pipeline-status">auto-tagged</span>
-                        </div>
-                        <div class="reelscout-hardware">RTX 5060 Ti · LOCAL INFERENCE · NO CLOUD</div>
-                    </div>
-                </section>
-
-                <button class="experience-toggle" id="exp-toggle">More about my experience ↓</button>
-                <div class="experience-content" id="exp-content">
-                    <h2 id="exp-header">Work Experience</h2>
-                    <br>
-                    <p id="exp-sub">Key roles and responsibilities</p>
-                    <br>
-
-                    <div class="exp-item">
-                        <strong class="job-company" id="job4-company">Empire City Real Estate</strong><br>
-                        <span class="job-pos" id="job4-pos">Video Editor</span><br>
-                        <span class="job-date" id="job4-date">December 2025 — Present</span><br>
-                        <span id="job4-desc">Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.</span>
-                    </div>
-                    <div class="exp-item">
-                        <strong class="job-company" id="job1-company">EditValue</strong><br>
-                        <span class="job-pos" id="job1-pos">Quality Control Lead</span><br>
-                        <span class="job-date" id="job1-date">February 2022 — November 2025</span><br>
-                        <span id="job1-desc">Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.</span>
-                    </div>
-                    <div class="exp-item">
-                        <strong class="job-company" id="job2-company">AI-Video</strong><br>
-                        <span class="job-pos" id="job2-pos">Video Editor</span><br>
-                        <span class="job-date" id="job2-date">October 2024 — Present</span><br>
-                        <span id="job2-desc">Creating original content with generative AI tools. Combining traditional editing with neural network approaches for visual impact. Scriptwriting and visual development for media platforms.</span>
-                    </div>
-                    <div class="exp-item">
-                        <strong class="job-company" id="job3-company">Optimedia</strong><br>
-                        <span class="job-pos" id="job3-pos">Video Editor</span><br>
-                        <span class="job-date" id="job3-date">September 2019 — December 2023</span><br>
-                        <span id="job3-desc">Editing news stories and digital platform content. Fast-paced collaboration with editors and journalists under tight deadlines. Color correction, audio mixing, and visual optimization.</span>
-                    </div>
-
-                    <div class="recommendation-section">
-                        <img src="recommendation_letter.png" alt="Recommendation Letter"
-                             width="100%" style="max-width: 760px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--glass-border); border-radius: 10px;" loading="lazy">
-                    </div>
-                </div>
+                <details class="recommendation">
+                    <summary class="recommendation-label mono" data-i18n="recLabel">Recommendation letter</summary>
+                    <button class="recommendation-thumb" id="rec-thumb" aria-label="Open recommendation letter">
+                        <img src="recommendation_letter.png" alt="Recommendation Letter" loading="lazy">
+                    </button>
+                </details>
             </section>
         </main>
 
-        <footer id="footer">
-            <p class="local-time" id="local-time"></p>
-            <p style="margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-family: var(--mono-font); letter-spacing: 0.15em;" id="contact-label">Get in touch</p>
-            <a href="mailto:maskitkk@gmail.com" class="contact-link">mail: maskitkk@gmail.com</a><br>
-            <a href="https://t.me/maskitkk" class="contact-link">tg: @maskitkk</a><br>
-            <a href="https://www.instagram.com/synth.pix/" class="contact-link">inst: @synth.pix</a>
+        <footer id="contact">
+            <div class="contact-wrap">
+                <h2 class="section-header" data-i18n="contactHeader">Contact</h2>
+                <p class="local-time mono" id="local-time"></p>
+                <div class="contact-list">
+                    <a href="mailto:maskitkk@gmail.com" class="contact-link">mail: maskitkk@gmail.com</a>
+                    <a href="https://t.me/maskitkk" class="contact-link">tg: @maskitkk</a>
+                    <a href="https://www.instagram.com/synth.pix/" class="contact-link">inst: @synth.pix</a>
+                </div>
+            </div>
         </footer>
     </div>
 
+    <div id="lightbox" aria-hidden="true">
+        <img id="lightbox-img" src="recommendation_letter.png" alt="Recommendation Letter">
+    </div>
+
     <script>
-        // Translations (unchanged)
+        // ============ Translations ============
         const translations = {
             en: {
-                logo: 'MATVEY SPORSHEV', heroTitle: 'Classic editing,<br><span>AI evolution.</span>',
+                logo: 'MATVEY SPORSHEV',
+                heroTitle: 'Classic Editing,<br><span>AI Evolution.</span>',
                 heroMeta: 'REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS',
-                heroSub: 'Professional video editing combining traditional storytelling with generative AI solutions. Over 6 years of experience creating expressive, dynamic content.',
-                portfolioHeader: 'Featured Work', aiTitle: 'After Effects + Generative AI + Sound Design',
+                heroTags: 'Adobe Premiere Pro · After Effects · Sound Design · Generative AI',
+                navWork: 'Work', navReel: 'ReelScout', navExp: 'Experience', navContact: 'Contact',
+                workHeader: 'Work', contactHeader: 'Contact',
+                fAll: 'All', fShort: 'Short Form', fLong: 'Long Form', fAI: 'AI',
+                w1: 'Real Estate', w2: 'Podcast highlight', w3: 'Wedding Teaser', w4: 'Talking Reels',
+                w5: 'Brand Ad', w6: 'Entertainment Reels', w7: 'YouTube Format', w8: 'Inspirational Video',
+                w9: 'Wedding Video', w10: 'Motion Study', w11: 'Relight', w12: 'Film Look', w13: 'B-Roll',
                 reelscoutHeader: 'Built: ReelScout',
                 reelscoutSub: 'Local AI tool for automated footage review — scene detection, transcription, and content description, running entirely on-device.',
-                shortTitle: 'Vertical', longTitle: 'Horizontal', contactLabel: 'Get in touch',
-                navCta: 'Contact',
-                expBtn: 'More about my experience ↓', expBtnClose: 'Show less ↑',
                 expHeader: 'Work Experience', expSub: 'Key roles and responsibilities',
+                recLabel: 'Recommendation letter',
                 job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'February 2022 — November 2025',
                 job1Desc: 'Editing short and long-form videos (weddings, events, corporate). Quality Control (QC): fixing technical/visual errors, ensuring standards. Client & team communication in English. Workflow organization and deadline management.',
                 job2Company: 'AI-Video', job2Pos: 'Video Editor', job2Date: 'October 2024 — Present',
@@ -608,16 +796,20 @@
                 job4Desc: 'Working for the Dubai branch of Empire City Real Estate. Video editing of vertical videos up to 1 minute in multiple languages, color correction, sound design, active use of AI, motion design.'
             },
             ru: {
-                logo: 'МАТВЕЙ СПОРШЕВ', heroTitle: 'Классика монтажа,<br><span>эволюция ИИ.</span>',
+                logo: 'МАТВЕЙ СПОРШЕВ',
+                heroTitle: 'Классика монтажа,<br><span>эволюция ИИ.</span>',
                 heroMeta: 'REC.709 · 25FPS · PREMIERE PRO · AFTER EFFECTS',
-                heroSub: 'Профессиональный видеомонтаж, сочетающий традиции сторителлинга с генеративными AI-решениями. Более 6 лет опыта создания выразительного, динамичного контента.',
-                portfolioHeader: 'Избранные Работы', aiTitle: 'Афтер Эффектс + генеративный ИИ + звуковое оформление',
+                heroTags: 'Adobe Premiere Pro · After Effects · Саунд-дизайн · Генеративный ИИ',
+                navWork: 'Работы', navReel: 'ReelScout', navExp: 'Опыт', navContact: 'Контакты',
+                workHeader: 'Работы', contactHeader: 'Контакты',
+                fAll: 'Все', fShort: 'Short Form', fLong: 'Long Form', fAI: 'AI',
+                w1: 'Недвижимость', w2: 'Хайлайт подкаста', w3: 'Свадебный тизер', w4: 'Разговорный рилс',
+                w5: 'Реклама бренда', w6: 'Развлекательные рилс', w7: 'Ютуб-формат', w8: 'Вдохновляющее видео',
+                w9: 'Свадебное видео', w10: 'Motion Study', w11: 'Пересвет', w12: 'Киноплёнка', w13: 'Би-ролл',
                 reelscoutHeader: 'Разработал: ReelScout',
                 reelscoutSub: 'Локальный AI-инструмент для автоматического разбора отснятого материала — определение сцен, транскрипция и описание контента. Всё работает локально, на устройстве.',
-                shortTitle: 'Вертикаль', longTitle: 'Горизонталь', contactLabel: 'Связаться',
-                navCta: 'Связаться',
-                expBtn: 'Подробнее о моём опыте ↓', expBtnClose: 'Свернуть ↑',
                 expHeader: 'Опыт работы', expSub: 'Ключевые места и обязанности',
+                recLabel: 'Рекомендательное письмо',
                 job1Company: 'EditValue', job1Pos: 'Quality Control Lead', job1Date: 'Февраль 2022 — Ноябрь 2025',
                 job1Desc: 'Монтаж коротких и длинных видео, включая свадебные, праздничные и корпоративные проекты. Контроль качества готовых видео (QC): исправление технических и визуальных ошибок, финальная проверка соответствия стандартам. Коммуникация с клиентами и командой на английском языке.',
                 job2Company: 'AI-видео', job2Pos: 'Видео-монтажёр', job2Date: 'Октябрь 2024 — настоящее время',
@@ -630,201 +822,181 @@
         };
 
         let currentLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
-        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Language switch
+        // ============ Language ============
         function updateContent(lang) {
-            document.getElementById('site-logo').innerText = translations[lang].logo;
-            document.getElementById('hero-title').innerHTML = translations[lang].heroTitle;
-            document.getElementById('hero-meta').innerText = translations[lang].heroMeta;
-            document.getElementById('hero-sub').innerText = translations[lang].heroSub;
-            document.getElementById('portfolio-header').innerText = translations[lang].portfolioHeader;
-            document.getElementById('ai-title').innerText = translations[lang].aiTitle;
-            document.getElementById('reelscout-header').innerText = translations[lang].reelscoutHeader;
-            document.getElementById('reelscout-sub').innerText = translations[lang].reelscoutSub;
-            document.getElementById('short-title').innerText = translations[lang].shortTitle;
-            document.getElementById('long-title').innerText = translations[lang].longTitle;
-            document.getElementById('contact-label').innerText = translations[lang].contactLabel;
-            document.getElementById('nav-cta').innerText = translations[lang].navCta;
-
-            const isExpOpen = document.getElementById('exp-content').classList.contains('open');
-            document.getElementById('exp-toggle').innerText = isExpOpen ? translations[lang].expBtnClose : translations[lang].expBtn;
-            document.getElementById('exp-header').innerText = translations[lang].expHeader;
-            document.getElementById('exp-sub').innerText = translations[lang].expSub;
-            document.getElementById('job1-company').innerText = translations[lang].job1Company;
-            document.getElementById('job1-pos').innerText = translations[lang].job1Pos;
-            document.getElementById('job1-date').innerText = translations[lang].job1Date;
-            document.getElementById('job1-desc').innerText = translations[lang].job1Desc;
-            document.getElementById('job2-company').innerText = translations[lang].job2Company;
-            document.getElementById('job2-pos').innerText = translations[lang].job2Pos;
-            document.getElementById('job2-date').innerText = translations[lang].job2Date;
-            document.getElementById('job2-desc').innerText = translations[lang].job2Desc;
-            document.getElementById('job3-company').innerText = translations[lang].job3Company;
-            document.getElementById('job3-pos').innerText = translations[lang].job3Pos;
-            document.getElementById('job3-date').innerText = translations[lang].job3Date;
-            document.getElementById('job3-desc').innerText = translations[lang].job3Desc;
-            document.getElementById('job4-company').innerText = translations[lang].job4Company;
-            document.getElementById('job4-pos').innerText = translations[lang].job4Pos;
-            document.getElementById('job4-date').innerText = translations[lang].job4Date;
-            document.getElementById('job4-desc').innerText = translations[lang].job4Desc;
-
-            document.querySelectorAll('.card-title').forEach(title => {
-                const text = title.getAttribute(`data-${lang}`);
-                if (text) title.innerText = text;
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.innerHTML = t[key];
             });
+            const logo = document.getElementById('site-logo');
+            if (logo) logo.textContent = t.logo;
+            document.getElementById('hero-title').innerHTML = t.heroTitle;
             currentLang = lang;
         }
 
         updateContent(currentLang);
         document.getElementById('lang-btn').onclick = () => updateContent(currentLang === 'en' ? 'ru' : 'en');
-
-        // Experience toggle
-        document.getElementById('exp-toggle').onclick = function() {
-            const content = document.getElementById('exp-content');
-            content.classList.toggle('open');
-            this.innerText = content.classList.contains('open') ? translations[currentLang].expBtnClose : translations[currentLang].expBtn;
-            pulseGrain();
-            if (content.classList.contains('open')) {
-                setTimeout(() => content.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-            }
+        document.getElementById('lang-btn').onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateContent(currentLang === 'en' ? 'ru' : 'en'); }
         };
 
-        // Grain pulse (film-grain emphasis on explicit user actions, desktop only)
+        // ============ Grain pulse ============
         function pulseGrain() {
-            if (isMobile) return;
             const el = document.getElementById('grain-overlay');
             if (!el) return;
             if (typeof gsap !== 'undefined') {
                 gsap.timeline()
                     .to(el, { opacity: 0.12, duration: 0.15, ease: 'power1.out' })
-                    .to(el, { opacity: 0.03, duration: 0.15, ease: 'power1.in' });
+                    .to(el, { opacity: 0.05, duration: 0.15, ease: 'power1.in' });
             } else {
                 el.style.transition = 'opacity 0.3s';
                 el.style.opacity = '0.12';
-                setTimeout(() => { el.style.opacity = '0.03'; }, 150);
+                setTimeout(() => { el.style.opacity = '0.05'; }, 150);
             }
         }
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseenter', pulseGrain);
+
+        // ============ Nav overlay ============
+        const overlay = document.getElementById('nav-overlay');
+        const navToggle = document.getElementById('nav-toggle');
+        const overlayClose = document.getElementById('nav-overlay-close');
+        const overlayLinks = overlay.querySelectorAll('.nav-overlay-link');
+
+        function openOverlay() {
+            overlay.classList.add('is-open');
+            overlay.setAttribute('aria-hidden', 'false');
+            navToggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeOverlay() {
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            navToggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+        navToggle.onclick = () => overlay.classList.contains('is-open') ? closeOverlay() : openOverlay();
+        overlayClose.onclick = closeOverlay;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (overlay.classList.contains('is-open')) closeOverlay();
+                closeLightbox();
+            }
         });
 
-        // Lazy load Vimeo iframes
-        const observer = new IntersectionObserver((entries) => {
+        overlayLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('data-target'));
+                closeOverlay();
+                if (target) setTimeout(() => target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' }), 60);
+                else window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+            });
+        });
+
+        // ============ Work filter ============
+        const workBg = document.getElementById('work-bg');
+        const workBgImg = document.getElementById('work-bg-img');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const workTiles = document.querySelectorAll('.work-tile');
+
+        function applyFilter(filter) {
+            workTiles.forEach(tile => {
+                const show = filter === 'all' || tile.getAttribute('data-category') === filter;
+                tile.classList.toggle('is-hidden', !show);
+            });
+            if (filter !== 'all') {
+                const src = workBgImg.getAttribute('data-' + filter);
+                if (src && workBgImg.getAttribute('src') !== src) workBgImg.setAttribute('src', src);
+                workBg.classList.add('is-visible');
+            } else {
+                workBg.classList.remove('is-visible');
+            }
+        }
+
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const filter = tab.getAttribute('data-filter');
+                const wasActive = tab.classList.contains('active');
+                filterTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+                if (!wasActive) {
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                }
+                applyFilter(wasActive ? 'all' : filter);
+                pulseGrain();
+            });
+        });
+
+        // ============ Video loading ============
+        // Load as soon as a card approaches the viewport (preloads slightly before scroll reaches it).
+        const cards = document.querySelectorAll('.work-card');
+        const io = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const card = entry.target;
                     const iframe = card.querySelector('iframe');
-                    const src = card.dataset.src;
-                    if (src && !iframe.src) {
-                        iframe.src = src;
-                        card.classList.add('loaded');
-                        observer.unobserve(card);
-                    }
+                    const src = card.getAttribute('data-src');
+                    if (src && !iframe.getAttribute('src')) iframe.setAttribute('src', src);
+                    card.classList.add('loaded');
+                    io.unobserve(card);
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.01, rootMargin: '250px 0px' });
 
-        document.querySelectorAll('.card').forEach(card => observer.observe(card));
+        cards.forEach(card => io.observe(card));
 
-        // Hero parallax background — smooth lerped mousemove (no throttle/debounce)
-        (function () {
-            const hero = document.querySelector('.hero');
-            const wrap = document.getElementById('hero-parallax');
-            if (!hero || !wrap) return;
-            if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        // ============ Lightbox ============
+        const lightbox = document.getElementById('lightbox');
+        const recThumb = document.getElementById('rec-thumb');
+        function openLightbox() {
+            lightbox.classList.add('is-open');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('is-open');
+            lightbox.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+        recThumb.addEventListener('click', openLightbox);
+        lightbox.addEventListener('click', closeLightbox);
 
-            const layers = Array.from(wrap.querySelectorAll('.parallax-layer'));
-            const MAX_SHIFT_PX = 32;
-            const LERP = 0.07;
-            const MAX_ZOOM = 0.03;
-
-            let targetX = 0, targetY = 0, targetScale = 1;
-            let curX = 0, curY = 0, curScale = 1;
-            let raf = null;
-
-            hero.addEventListener('mousemove', (e) => {
-                const r = wrap.getBoundingClientRect();
-                const centerX = r.left + r.width / 2;
-                const centerY = r.top + r.height / 2;
-                targetX = Math.max(-1, Math.min(1, (e.clientX - centerX) / centerX));
-                targetY = Math.max(-1, Math.min(1, (e.clientY - centerY) / centerY));
-                const dist = Math.sqrt(targetX * targetX + targetY * targetY) / Math.SQRT2;
-                targetScale = 1 + dist * MAX_ZOOM;
-                if (raf === null) raf = requestAnimationFrame(tick);
-            });
-
-            function tick() {
-                curX += (targetX - curX) * LERP;
-                curY += (targetY - curY) * LERP;
-                curScale += (targetScale - curScale) * LERP;
-
-                for (const layer of layers) {
-                    const depth = parseFloat(layer.dataset.depth) || 0;
-                    layer.style.transform =
-                        'translate3d(' + (curX * depth * MAX_SHIFT_PX).toFixed(2) + 'px,' +
-                        (curY * depth * MAX_SHIFT_PX * 0.5).toFixed(2) + 'px,0)';
-                }
-                wrap.style.transform = 'scale(' + curScale.toFixed(4) + ')';
-
-                if (Math.abs(targetX - curX) < 0.0005 && Math.abs(targetY - curY) < 0.0005 && Math.abs(targetScale - curScale) < 0.0001) {
-                    curX = targetX; curY = targetY; curScale = targetScale;
-                    raf = null;
-                    return;
-                }
-                raf = requestAnimationFrame(tick);
-            }
-
-            const io = new IntersectionObserver((entries) => {
-                entries.forEach((en) => {
-                    if (!en.isIntersecting && raf !== null) {
-                        cancelAnimationFrame(raf);
-                        raf = null;
-                    }
-                });
-            }, { threshold: 0 });
-            io.observe(hero);
-        })();
-
-        // GSAP animations (runs after defer)
+        // ============ GSAP ============
         function initGSAP() {
-            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-            gsap.registerPlugin(ScrollTrigger);
-
+            if (typeof gsap === 'undefined') return;
+            if (prefersReducedMotion) return;
+            // Hero intro only — everything else is visible by default in CSS
             gsap.timeline()
-                .from(".hero h1", { y: 40, opacity: 0, duration: 1, ease: "power3.out" })
-                .from(".subtitle", { y: 20, opacity: 0, duration: 0.8 }, "-=0.7")
-                .from(".skills-container", { y: 20, opacity: 0, duration: 0.6 }, "-=0.5");
+                .from('.hero-title', { y: 50, opacity: 0, duration: 1, ease: 'power3.out' })
+                .from('.hero-tags', { y: 20, opacity: 0, duration: 0.7 }, '-=0.5')
+                .from('.hero-corner', { opacity: 0, duration: 0.6 }, '-=0.4');
 
+            // Pipeline bars: fill on load (no ScrollTrigger dependency)
             const fills = gsap.utils.toArray('.pipeline-fill');
             if (fills.length) {
                 gsap.fromTo(fills,
                     { width: '0%' },
                     {
-                        width: function(i) { return (fills[i].dataset.width || '100') + '%'; },
-                        duration: 1.1, ease: 'power2.out', stagger: 0.15,
-                        scrollTrigger: {
-                            trigger: '.dashboard-mock',
-                            start: 'top 85%',
-                            once: true
-                        }
+                        width: function(i) { return (fills[i].getAttribute('data-width') || '100') + '%'; },
+                        duration: 1.1, ease: 'power2.out', stagger: 0.15, delay: 0.6
                     }
                 );
             }
         }
 
-        // Initialize when scripts load
-        window.addEventListener('load', () => {
-            initGSAP();
-        });
+        window.addEventListener('load', initGSAP);
 
-        // Live local time (Europe/Moscow)
+        // ============ Local time ============
         function updateLocalTime() {
             const el = document.getElementById('local-time');
             if (!el) return;
             const time = new Date().toLocaleTimeString('en-GB', {
                 timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit'
             });
-            el.textContent = `Nizhny Novgorod — ${time} (UTC+3)`;
+            el.textContent = 'Nizhny Novgorod — ' + time + ' (UTC+3)';
         }
         updateLocalTime();
         setInterval(updateLocalTime, 30000);
